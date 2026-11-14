@@ -17,14 +17,14 @@ está preservado em [docs/custom-install-README.md](docs/custom-install-README.m
 
 ```
 android/        app Android (Kotlin + Compose) — o DreamInstaller
+3ds/            finalizador DreamInstallFinalize (C, libctru + citro2d)
 custominstall/  ferramenta original em Python, para PC
 finalize/       homebrew original que instala ticket e seed no 3DS
 extras/         scripts auxiliares do upstream
 docs/           README original do custom-install
 ```
 
-O plano é ter, no futuro, um finalizador próprio em `3ds/` para substituir o
-`custom-install-finalize`.
+O finalizador próprio fica em `3ds/` e é copiado para o cartão pelo app.
 
 | Tela principal | Ajustes |
 | --- | --- |
@@ -54,7 +54,7 @@ O plano é ter, no futuro, um finalizador próprio em `3ds/` para substituir o
 
 Baixe o APK em
 [Releases](https://github.com/eduhbarb/DreamInstaller/releases/latest) e instale no celular.
-O arquivo da versão atual é `DreamInstaller-1.0.1.apk`.
+O arquivo da versão atual é `DreamInstaller-1.1.0.apk`.
 
 - Android 11 ou mais novo, arm64.
 - O APK é assinado com uma chave de desenvolvimento, então não vem da Play Store.
@@ -132,7 +132,8 @@ O que o app faz:
   `title/<high>/<low>`.
 - Faz backup de `title.db` e `import.db` em `/ci-backup/<data-hora>/` antes de mexer.
 - Importa o `title.db` a cada título, para que uma interrupção não perca os anteriores.
-- Copia `custom-install-finalize.3dsx` para `/3ds` no fim.
+- Copia `DreamInstallFinalize.3dsx` para `/3ds` e `DreamInstallFinalize.cia` para `/cias`
+  quando faltam ou estão desatualizados.
 - Avisa se o cartão chegou perto do limite de 300 ícones da HOME Menu.
 
 Cancelar interrompe depois do título atual, sem corromper a fila.
@@ -141,13 +142,20 @@ Cancelar interrompe depois do título atual, sem corromper a fila.
 
 1. Ejete o cartão do celular (ou desconecte o leitor com segurança).
 2. Coloque o cartão no 3DS.
-3. Abra o **Homebrew Launcher** e rode **custom-install-finalize**.
+3. Abra o **Homebrew Launcher** e rode **DreamInstallFinalize**.
 
-Esse passo instala o ticket e a seed no console. Sem ele o jogo fica como presente não aberto
-ou nem aparece na HOME Menu.
+O app deixa o finalizador no cartão automaticamente: `3dsx` em `/3ds` e `.cia` em `/cias`. Ele
+só reescreve o arquivo se estiver faltando ou diferente do build atual.
+
+O DreamInstallFinalize faz o mesmo trabalho do `custom-install-finalize`: instala o ticket e a
+seed no console. No fim, ele mostra uma tela com os títulos finalizados, os que já estavam e os
+que falharam, e pede **START** para voltar ao menu.
+
+Se quiser o ícone dele na HOME Menu, instale `/cias/DreamInstallFinalize.cia` pelo FBI. O 3dsx
+continua sendo a forma mais simples de rodar.
 
 O ticket mora no `ticket.db` do NAND. Nenhum app Android consegue gravá-lo, então esse passo
-no 3DS continua obrigatório — exatamente como no custom-install de PC.
+no 3DS continua obrigatório.
 
 ## Ajustes do app
 
@@ -155,7 +163,8 @@ no 3DS continua obrigatório — exatamente como no custom-install de PC.
   igual ao DreamFTP.
 - **Conferir hash dos conteúdos**: ligado por padrão. Detecta CIA corrompido antes de gravar.
 - **Sobrescrever saves existentes**: desligado por padrão, mantém o save que já está no cartão.
-- **Copiar finalize.3dsx automaticamente**: ligado por padrão.
+- **Copiar DreamInstallFinalize automaticamente**: ligado por padrão; mantém o 3dsx e o cia
+  no cartão.
 - **Esquecer chaves**: apaga `boot9.bin`, `movable.sed` e `seeddb.bin` do app.
 
 ## Solução de problemas
@@ -168,7 +177,7 @@ no 3DS continua obrigatório — exatamente como no custom-install de PC.
 | `seed ausente` | jogo de 2015+ sem `seeddb.bin` | adicione o `seeddb.bin` e reinstale |
 | `hash não confere` | CIA corrompido | baixe/copie o arquivo de novo |
 | Instalação para no meio | app fechado pelo sistema | a instalação roda em primeiro plano; mantenha a notificação ativa |
-| Jogo instalado mas continua como presente | ticket não instalado | rode `custom-install-finalize` no 3DS |
+| Jogo instalado mas continua como presente | ticket não instalado | rode `DreamInstallFinalize` no 3DS |
 | Jogo não aparece | HOME Menu cheia ou ticket ausente | rode o finalize; apague títulos para ficar abaixo de 300 |
 | `title.db corrompido` | problema no cartão ou interrupção | restaure `/ci-backup/<data>/title.db` e apague `cifinish.bin` |
 | Instalação cancelada pelo sistema no MIUI | restrição de instalação | abra o APK pelo gerenciador ou libere Instalar via USB |
@@ -222,6 +231,22 @@ O APK sai em `android/app/build/outputs/apk/release/app-release.apk`.
 
 Para assinar com a sua chave, troque `signingConfigs.getByName("debug")` em
 `android/app/build.gradle.kts` por uma configuração própria.
+
+### Recompilar o finalizador 3DS
+
+O fonte fica em `3ds/DreamInstallFinalize` (C, libctru + citro2d). Precisa de devkitPro com
+`3ds-dev`, makerom e bannertool.
+
+```sh
+cd 3ds/DreamInstallFinalize
+make
+bannertool makebanner -i meta/banner.png -a meta/audio.wav -o banner.bin
+makerom -f cia -o DreamInstallFinalize.cia -target t -elf DreamInstallFinalize.elf \
+  -rsf meta/DreamInstallFinalize.rsf -icon DreamInstallFinalize.smdh -banner banner.bin -exefslogo
+```
+
+O workflow `.github/workflows/3ds.yml` faz esse build no container `devkitpro/devkitarm` e
+publica `DreamInstallFinalize.3dsx` e `DreamInstallFinalize.cia` como artifacts.
 
 ### Recompilar o `save3ds`
 
@@ -293,6 +318,8 @@ cd android
 - **E2E**: o app instala os fixtures no aparelho. A árvore gerada é comparada com a saída do
   custom-install no PC: arquivos, `title.db` e `cifinish.bin` batem byte a byte (o único campo
   aleatório da entrada do banco é ignorado).
+- **Finalizador**: o workflow `3ds` compila o 3dsx e a CIA. O teste E2E do Android confere que
+  os dois arquivos chegam em `/3ds` e `/cias` e que `/dreamfinalize-names.txt` é escrito.
 
 ## Privacidade e legalidade
 
@@ -313,6 +340,9 @@ cd android
 - Fontes: [Fredoka](https://github.com/hafontia/Fredoka-One) e
   [Hanken Grotesk](https://github.com/marcologous/hanken-grotesk), SIL OFL 1.1.
 - Visual: inspirado no [DreamFTP](https://github.com/Synaelle/DreamFTP) (AGPL-3.0).
+- Finalizador 3DS: baseado no
+  [custom-install-finalize](https://github.com/ihaveamac/custom-install/tree/python-package/finalize)
+  (MIT, Ian Burgwin).
 
 O código do app é MIT (`android/LICENSE`). O custom-install original mantém a licença MIT em
 `LICENSE.md`. Textos completos das licenças em `android/app/src/main/assets/licenses` e na tela
@@ -323,5 +353,5 @@ de Licenças.
 - [x] Instalação de CIA direto no SD pelo Android
 - [x] Fila, progresso, cancelamento, backup de banco
 - [x] Tema com acentos e pt-BR/en
-- [ ] Finalizador próprio no 3DS (substituir o `custom-install-finalize` atual)
+- [x] Finalizador próprio no 3DS (DreamInstallFinalize, 3dsx + cia)
 - [ ] Suporte a outros ABIs

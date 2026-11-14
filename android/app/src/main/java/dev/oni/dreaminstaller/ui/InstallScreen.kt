@@ -364,7 +364,7 @@ fun InstallScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color(palette.soft),
                 )
-                if (install.result?.finalizeCopied == true) {
+                if (install.result?.let { it.finalizer3dsxCopied || it.finalizerCiaCopied } == true) {
                     Spacer(Modifier.height(10.dp))
                     LineNote(stringResource(R.string.finalize_copied), ChipTone.Ok, Icons.Filled.Check)
                 }

@@ -75,7 +75,7 @@ class InstallE2ETest {
             appendLine("done=${result.done}")
             appendLine("failed=${result.failed}")
             appendLine("states=$states")
-            appendLine("finalize=${result.finalizeCopied}")
+            appendLine("finalizer3dsx=${result.finalizer3dsxCopied} cia=${result.finalizerCiaCopied}")
             appendLine("titles=${result.usedTitleCount}")
             appendLine("--- log ---")
             logs.forEach { appendLine(it) }
@@ -92,8 +92,14 @@ class InstallE2ETest {
         assertEquals(2, result.done.size)
         assertTrue(layout.titleDb.length() > 0)
         assertTrue(File(layout.root, "cifinish.bin").exists())
-        assertTrue(result.finalizeCopied)
-        assertTrue(File(layout.root, "3ds/custom-install-finalize.3dsx").length() > 0)
+        assertTrue(result.finalizer3dsxCopied && result.finalizerCiaCopied)
+        assertTrue(File(layout.root, "3ds/DreamInstallFinalize.3dsx").isFile)
+        assertTrue(File(layout.root, "cias/DreamInstallFinalize.cia").isFile)
+        val names = File(layout.root, "dreamfinalize-names.txt").readText()
+        assertTrue(names.contains("000400000ff40a00"))
+        assertTrue(names.contains("000400000ff40b00"))
+        assertTrue(names.contains("Dream Test"))
+        assertTrue(names.contains("Dream Seed"))
     }
 
     private fun manifest(root: File): String {

@@ -397,7 +397,6 @@ static void draw_top(TitleEntry *entries, int count, TitleResult *results) {
 		}
 		(void)status;
 		C2D_DrawRectSolid(14, y, 0.5f, 3, 25, status_color);
-
 		const char *name = find_name(entries[i].title_id);
 		char display[80];
 		char truncated[72];
@@ -421,7 +420,7 @@ static void draw_top(TitleEntry *entries, int count, TitleResult *results) {
 	}
 }
 
-static void draw_bottom(bool kept_file) {
+static void draw_bottom(int mode) {
 	C2D_TargetClear(g_bottom, COLOR_BG);
 	C2D_SceneBegin(g_bottom);
 
@@ -429,9 +428,14 @@ static void draw_bottom(bool kept_file) {
 	draw_text(g_text_buf, "START", 121, 74, 0.95f, COLOR_ACCENT);
 	draw_text(g_text_buf, "para sair", 128, 106, 0.55f, COLOR_TEXT);
 
-	const char *note = kept_file
-		? "cifinish.bin foi mantido; rode de novo para tentar os que falharam."
-		: "cifinish.bin foi removido. Pode voltar ao menu.";
+	const char *note;
+	if (mode == 2) {
+		note = "Nada foi alterado no cartao.";
+	} else if (mode == 1) {
+		note = "cifinish.bin foi mantido; rode de novo para tentar os que falharam.";
+	} else {
+		note = "cifinish.bin foi removido. Pode voltar ao menu.";
+	}
 	draw_text(g_text_buf, note, 16, 158, 0.40f, COLOR_DIM);
 	draw_text(g_text_buf, "github.com/eduhbarb/DreamInstaller", 16, 206, 0.34f, COLOR_DIM);
 }
@@ -472,9 +476,13 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+	int bottom_mode = 2;
 	if (finalized > 0 && !any_failed) {
 		unlink(CIFINISH_PATH);
 		unlink(NAMES_PATH);
+		bottom_mode = 0;
+	} else if (finalized > 0) {
+		bottom_mode = 1;
 	}
 
 	while (aptMainLoop()) {
@@ -494,7 +502,7 @@ int main(int argc, char *argv[]) {
 			draw_text(g_text_buf, "DreamInstallFinalize", 16, 12, 0.82f, COLOR_TEXT);
 			draw_text(g_text_buf, g_message[0] ? g_message : "Nada para finalizar.", 24, 96, 0.55f, COLOR_TEXT);
 		}
-		draw_bottom(any_failed);
+		draw_bottom(bottom_mode);
 		C3D_FrameEnd(0);
 	}
 

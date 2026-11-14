@@ -94,62 +94,48 @@ object Storage {
         return dir
     }
 
-    fun copyFinalize(context: Context, layout: SdLayout): Boolean {
-        val name = "custom-install-finalize.3dsx"
-        val dir = File(layout.root, "3ds")
-        val target = File(dir, name)
-        val temp = File(dir, "$name.tmp")
-        val backup = File(dir, "$name.old")
-        var backedUp = false
-        var targetReady = false
+    fun copyFinalize(context: Context, layout: SdLayout): FinalizerStatus {
+        val threeDsx = syncAsset(
+            context,
+            "DreamInstallFinalize.3dsx",
+            File(layout.root, "3ds/DreamInstallFinalize.3dsx"),
+        )
+        val cia = syncAsset(
+            context,
+            "DreamInstallFinalize.cia",
+            File(layout.root, "cias/DreamInstallFinalize.cia"),
+        )
+        return FinalizerStatus(threeDsx, cia)
+    }
+
+    /** Copies an asset only when the file is missing or different, atomically. */
+    private fun syncAsset(context: Context, assetName: String, target: File): Boolean {
         return runCatching {
+            val bytes = context.assets.open(assetName).use { it.readBytes() }
+            if (target.isFile && target.length() == bytes.size.toLong() && target.readBytes().contentEquals(bytes)) {
+                return false
+            }
+            val dir = target.parentFile ?: throw InstallError("destino inválido para $assetName")
             if (!dir.isDirectory && !dir.mkdirs()) {
                 throw InstallError("não foi possível criar ${dir.absolutePath}")
             }
+            val temp = File(dir, target.name + ".tmp")
             temp.delete()
-            backup.delete()
-
-            val expected = runCatching {
-                context.assets.openFd(name).use { it.length }
-            }.getOrNull()
-
-            val written = context.assets.open(name).use { input ->
-                temp.outputStream().use { output ->
-                    val bytes = input.copyTo(output)
-                    output.flush()
-                    output.fd.sync()
-                    bytes
-                }
+            temp.outputStream().use { output ->
+                output.write(bytes)
+                output.flush()
+                output.fd.sync()
             }
-            if (written <= 0L || temp.length() != written) {
-                throw InstallError("cópia incompleta de $name")
-            }
-            if (expected != null && written != expected) {
-                throw InstallError("tamanho de $name não confere")
-            }
-
-            if (target.exists()) {
-                if (!target.renameTo(backup)) {
-                    throw InstallError("não foi possível preservar ${target.absolutePath}")
-                }
-                backedUp = true
+            if (temp.length() != bytes.size.toLong()) {
+                throw InstallError("cópia incompleta de $assetName")
             }
             if (!temp.renameTo(target)) {
-                throw InstallError("não foi possível publicar ${target.absolutePath}")
+                target.writeBytes(bytes)
+                temp.delete()
             }
-            if (target.length() != written) {
-                throw InstallError("$name truncou ao publicar")
-            }
-            targetReady = true
-            backup.delete()
             true
         }.onFailure {
-            temp.delete()
-            if (backedUp && !targetReady) {
-                target.delete()
-                backup.renameTo(target)
-            }
-            Log.w("DreamInstaller", "falha ao copiar $name", it)
+            Log.w("DreamInstaller", "falha ao copiar $assetName", it)
         }.getOrDefault(false)
     }
 
@@ -204,3 +190,9 @@ data class FoundKeys(
             if (seeddb != null) add("seeddb.bin")
         }
 }
+
+/** Which DreamInstallFinalize files were written to the SD this session. */
+data class FinalizerStatus(
+    val threeDsx: Boolean,
+    val cia: Boolean,
+)

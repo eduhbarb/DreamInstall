@@ -15,7 +15,8 @@ enum class TitleState { Waiting, Writing, Finishing, Done, Failed, Skipped }
 data class InstallResult(
     val done: List<String>,
     val failed: Map<String, String>,
-    val finalizeCopied: Boolean,
+    val finalizer3dsxCopied: Boolean,
+    val finalizerCiaCopied: Boolean,
     val usedTitleCount: Int,
     val backupDir: File?,
 )
@@ -97,8 +98,19 @@ class Installer(
             }
         }
 
-        val copied = if (done.isNotEmpty() && copyFinalizeProgram) Storage.copyFinalize(context, layout) else false
-        return InstallResult(done, failed, copied, Storage.usedTitleCount(layout), backup)
+        val finalizer = if (done.isNotEmpty() && copyFinalizeProgram) {
+            Storage.copyFinalize(context, layout)
+        } else {
+            FinalizerStatus(false, false)
+        }
+        return InstallResult(
+            done,
+            failed,
+            finalizer.threeDsx,
+            finalizer.cia,
+            Storage.usedTitleCount(layout),
+            backup,
+        )
     }
 
     private fun installTitle(index: Int, cia: Cia, workDir: File) {
@@ -173,10 +185,46 @@ class Installer(
             File(workDir, titleId).writeBytes(entry)
             log("importando $titleId no title.db...")
             save3ds.import(layout, keyFiles, workDir).forEach { log("save3ds: $it") }
+
+            updateNameSidecar(titleId, cia.displayLabel)
         } catch (e: Exception) {
             tempRoot.deleteRecursively()
             throw e
         }
+    }
+
+    /**
+     * Keeps /dreamfinalize-names.txt in sync so DreamInstallFinalize can show the game names.
+     * One line per title: lowercase 16 digit title id, a tab, then the name.
+     */
+    private fun updateNameSidecar(titleId: String, name: String) {
+        val file = File(layout.root, "dreamfinalize-names.txt")
+        val names = LinkedHashMap<Long, String>()
+        if (file.isFile) {
+            runCatching {
+                file.readLines(Charsets.UTF_8).forEach { line ->
+                    val tab = line.indexOf('\t')
+                    if (tab > 0) {
+                        val id = java.lang.Long.parseUnsignedLong(line.substring(0, tab), 16)
+                        val value = line.substring(tab + 1).trim()
+                        if (value.isNotEmpty()) names[id] = value
+                    }
+                }
+            }
+        }
+        val clean = name.replace('\t', ' ').replace('\n', ' ').replace('\r', ' ').trim()
+        names[java.lang.Long.parseUnsignedLong(titleId, 16)] = clean
+        val text = names.entries
+            .sortedWith { a, b -> java.lang.Long.compareUnsigned(a.key, b.key) }
+            .joinToString("\n") { "%016x\t%s".format(it.key, it.value) } + "\n"
+        val temp = File(file.parentFile, "${file.name}.tmp")
+        runCatching {
+            temp.writeText(text, Charsets.UTF_8)
+            if (!temp.renameTo(file)) {
+                file.writeText(text, Charsets.UTF_8)
+                temp.delete()
+            }
+        }.onFailure { log("não foi possível salvar os nomes: ${it.message}") }
     }
 
     private fun writeEncrypted(target: File, plain: ByteArray, path3ds: String) {
