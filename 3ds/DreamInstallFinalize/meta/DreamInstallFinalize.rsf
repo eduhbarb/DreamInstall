@@ -5,7 +5,7 @@ BasicInfo:
 
 TitleInfo:
   Category                : Application
-  UniqueId                : 0xF4D10
+  UniqueId                : 0xFF4D1
 
 Option:
   UseOnSD                 : true
