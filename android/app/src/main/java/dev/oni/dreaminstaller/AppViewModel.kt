@@ -49,6 +49,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     val verifyHashes = MutableStateFlow(prefs.getBoolean("verify", true))
     val overwriteSaves = MutableStateFlow(prefs.getBoolean("overwrite", false))
     val copyFinalize = MutableStateFlow(prefs.getBoolean("finalize", true))
+    val installFinalizerTitle = MutableStateFlow(prefs.getBoolean("installFinalizer", true))
 
     val keys = MutableStateFlow<ConsoleKeys?>(null)
     val keyFiles = MutableStateFlow<Save3ds.KeysFiles?>(null)
@@ -115,6 +116,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun setCopyFinalize(value: Boolean) {
         copyFinalize.value = value
         prefs.edit().putBoolean("finalize", value).apply()
+    }
+
+    fun setInstallFinalizerTitle(value: Boolean) {
+        installFinalizerTitle.value = value
+        prefs.edit().putBoolean("installFinalizer", value).apply()
     }
 
     fun show(text: String?) {
@@ -384,6 +390,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 verifyHashes = verifyHashes.value,
                 overwriteSaves = overwriteSaves.value,
                 copyFinalize = copyFinalize.value,
+                installFinalizerTitle = installFinalizerTitle.value,
             ),
         )
         InstallService.start(app)

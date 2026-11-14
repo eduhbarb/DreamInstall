@@ -368,6 +368,10 @@ fun InstallScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
                     Spacer(Modifier.height(10.dp))
                     LineNote(stringResource(R.string.finalize_copied), ChipTone.Ok, Icons.Filled.Check)
                 }
+                if (install.result?.finalizerTitleInstalled == true) {
+                    Spacer(Modifier.height(8.dp))
+                    LineNote(stringResource(R.string.finalizer_title_installed), ChipTone.Ok, Icons.Filled.Check)
+                }
             }
         }
 

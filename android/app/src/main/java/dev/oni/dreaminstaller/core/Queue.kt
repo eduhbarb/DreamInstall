@@ -93,6 +93,7 @@ class InstallRequest(
     val verifyHashes: Boolean,
     val overwriteSaves: Boolean,
     val copyFinalize: Boolean,
+    val installFinalizerTitle: Boolean,
 )
 
 data class TitleProgress(

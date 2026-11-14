@@ -54,7 +54,7 @@ O finalizador próprio fica em `3ds/` e é copiado para o cartão pelo app.
 
 Baixe o APK em
 [Releases](https://github.com/eduhbarb/DreamInstaller/releases/latest) e instale no celular.
-O arquivo da versão atual é `DreamInstaller-1.1.0.apk`.
+O arquivo da versão atual é `DreamInstaller-1.2.0.apk`.
 
 - Android 11 ou mais novo, arm64.
 - O APK é assinado com uma chave de desenvolvimento, então não vem da Play Store.
@@ -145,13 +145,16 @@ Cancelar interrompe depois do título atual, sem corromper a fila.
 3. Abra o **Homebrew Launcher** e rode **DreamInstallFinalize**.
 
 O app deixa o finalizador no cartão automaticamente: `3dsx` em `/3ds` e `.cia` em `/cias`. Ele
-só reescreve o arquivo se estiver faltando ou diferente do build atual.
+só reescreve o arquivo se estiver faltando ou diferente do build atual. Se o finalizador ainda
+não estiver instalado no console, o app também instala o CIA como título e coloca o ticket dele
+no próximo `cifinish.bin`; assim, depois da primeira execução do 3dsx, ele aparece na HOME Menu.
+Isso pode ser desligado em **Ajustes → Instalar DreamInstallFinalize na HOME**.
 
 O DreamInstallFinalize faz o mesmo trabalho do `custom-install-finalize`: instala o ticket e a
 seed no console. No fim, ele mostra uma tela com os títulos finalizados, os que já estavam e os
-que falharam, e pede **START** para voltar ao menu.
+que falharam, e pede **START** para voltar ao menu. Ele não lista a si mesmo, só os jogos.
 
-Se quiser o ícone dele na HOME Menu, instale `/cias/DreamInstallFinalize.cia` pelo FBI. O 3dsx
+Se preferir instalar o CIA na mão, ele também está em `/cias/DreamInstallFinalize.cia`; o 3dsx
 continua sendo a forma mais simples de rodar.
 
 O ticket mora no `ticket.db` do NAND. Nenhum app Android consegue gravá-lo, então esse passo
@@ -165,6 +168,8 @@ no 3DS continua obrigatório.
 - **Sobrescrever saves existentes**: desligado por padrão, mantém o save que já está no cartão.
 - **Copiar DreamInstallFinalize automaticamente**: ligado por padrão; mantém o 3dsx e o cia
   no cartão.
+- **Instalar DreamInstallFinalize na HOME**: ligado por padrão; instala o CIA como título se
+  ele ainda não estiver no `title.db`. O ticket entra no próximo finalize.
 - **Esquecer chaves**: apaga `boot9.bin`, `movable.sed` e `seeddb.bin` do app.
 
 ## Solução de problemas
@@ -179,6 +184,7 @@ no 3DS continua obrigatório.
 | Instalação para no meio | app fechado pelo sistema | a instalação roda em primeiro plano; mantenha a notificação ativa |
 | Jogo instalado mas continua como presente | ticket não instalado | rode `DreamInstallFinalize` no 3DS |
 | Jogo não aparece | HOME Menu cheia ou ticket ausente | rode o finalize; apague títulos para ficar abaixo de 300 |
+| DreamInstallFinalize não aparece na HOME | ticket ainda não instalado | rode o 3dsx uma vez; o app já deixou o título no cartão |
 | `title.db corrompido` | problema no cartão ou interrupção | restaure `/ci-backup/<data>/title.db` e apague `cifinish.bin` |
 | Instalação cancelada pelo sistema no MIUI | restrição de instalação | abra o APK pelo gerenciador ou libere Instalar via USB |
 

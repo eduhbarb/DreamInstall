@@ -67,6 +67,7 @@
     <string name="finalize_title">Last step, on the 3DS</string>
     <string name="finalize_text">Run DreamInstallFinalize in the Homebrew Launcher. It installs the ticket and the seed and lists the finalized titles.</string>
     <string name="finalize_copied">DreamInstallFinalize copied: 3dsx in /3ds and cia in /cias.</string>
+    <string name="finalizer_title_installed">DreamInstallFinalize installed as a title. Run the 3dsx once to activate its ticket.</string>
 
     <string name="result_done">%1$d installed</string>
     <string name="result_failed">%1$d failed</string>
@@ -83,6 +84,8 @@
     <string name="settings_overwrite_desc">Off keeps the save already on the card.</string>
     <string name="settings_finalize">Copy DreamInstallFinalize automatically</string>
     <string name="settings_finalize_desc">Puts the 3dsx in /3ds and the cia in /cias after a successful install.</string>
+    <string name="settings_finalizer_title">Install DreamInstallFinalize on the HOME Menu</string>
+    <string name="settings_finalizer_title_desc">Adds its CIA as a title if it is not installed yet; the next finalize run installs the ticket.</string>
     <string name="settings_keys">Keys</string>
     <string name="settings_clear_keys">Forget keys</string>
     <string name="settings_about">About</string>

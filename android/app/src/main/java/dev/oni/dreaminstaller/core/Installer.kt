@@ -17,6 +17,7 @@ data class InstallResult(
     val failed: Map<String, String>,
     val finalizer3dsxCopied: Boolean,
     val finalizerCiaCopied: Boolean,
+    val finalizerTitleInstalled: Boolean,
     val usedTitleCount: Int,
     val backupDir: File?,
 )
@@ -38,6 +39,7 @@ class Installer(
     private val verifyHashes: Boolean,
     private val overwriteSaves: Boolean,
     private val copyFinalizeProgram: Boolean,
+    private val installFinalizerTitle: Boolean,
     private val log: (String) -> Unit,
     private val onTitleState: (index: Int, state: TitleState, message: String?) -> Unit,
     private val onBytes: (index: Int, written: Long, total: Long) -> Unit,
@@ -49,7 +51,7 @@ class Installer(
     fun run(titles: List<Cia>): InstallResult {
         Storage.clearTempDirs(layout)
 
-        val needed = titles.sumOf { it.installSize() }
+        val needed = titles.sumOf { it.installSize() } + if (installFinalizerTitle) 1024L * 1024L else 0L
         val free = Storage.freeBytes(layout.root)
         if (needed > free) {
             throw InstallError(
@@ -67,6 +69,8 @@ class Installer(
         workDir.mkdirs()
         log("extraindo title.db...")
         save3ds.extract(layout, keyFiles, workDir).forEach { log("save3ds: $it") }
+
+        val finalizerTitleInstalled = if (installFinalizerTitle) ensureFinalizerTitle(workDir) else false
 
         val done = ArrayList<String>()
         val failed = LinkedHashMap<String, String>()
@@ -108,9 +112,62 @@ class Installer(
             failed,
             finalizer.threeDsx,
             finalizer.cia,
+            finalizerTitleInstalled,
             Storage.usedTitleCount(layout),
             backup,
         )
+    }
+
+    /**
+     * Installs the bundled DreamInstallFinalize CIA as a title when it is not in title.db yet.
+     * Its ticket goes into cifinish.bin, so the first finalize run puts the icon on the HOME
+     * Menu. If it is already installed, only makes sure cifinish knows about it.
+     */
+    private fun ensureFinalizerTitle(workDir: File): Boolean {
+        val titleId = FINALIZER_TITLE_ID
+        val high = titleId.substring(0, 8)
+        val low = titleId.substring(8, 16)
+        val dbEntry = File(workDir, titleId)
+        val titleDir = File(layout.titlePath, "$high/$low")
+        val installed = dbEntry.isFile && titleDir.isDirectory
+
+        val cifinish = File(layout.root, "cifinish.bin")
+        if (installed) {
+            if (cifinish.isFile) {
+                val data = Cifinish.load(cifinish)
+                val id = java.lang.Long.parseUnsignedLong(titleId, 16)
+                if (!data.containsKey(id)) {
+                    data[id] = null
+                    Cifinish.save(cifinish, data)
+                    updateNameSidecar(titleId, FINALIZER_NAME)
+                }
+            }
+            return false
+        }
+
+        return try {
+            val cached = File(context.cacheDir, "DreamInstallFinalize.cia")
+            context.assets.open("DreamInstallFinalize.cia").use { input ->
+                cached.outputStream().use { output -> input.copyTo(output) }
+            }
+            val source = ByteSource.fromFile(cached)
+            val cia = try {
+                Cia.open(source, keys)
+            } catch (e: Exception) {
+                source.close()
+                throw e
+            }
+            try {
+                log("instalando DreamInstallFinalize na HOME...")
+                installTitle(-1, cia, workDir)
+                true
+            } finally {
+                cia.close()
+            }
+        } catch (e: Exception) {
+            log("não foi possível instalar DreamInstallFinalize: ${e.message}")
+            false
+        }
     }
 
     private fun installTitle(index: Int, cia: Cia, workDir: File) {
@@ -411,6 +468,8 @@ class Installer(
 
     companion object {
         const val CHUNK = 0x200000
+        const val FINALIZER_TITLE_ID = "000400000ff4d100"
+        const val FINALIZER_NAME = "DreamInstallFinalize"
 
         fun formatSize(bytes: Long): String {
             val units = arrayOf("B", "KB", "MB", "GB", "TB")

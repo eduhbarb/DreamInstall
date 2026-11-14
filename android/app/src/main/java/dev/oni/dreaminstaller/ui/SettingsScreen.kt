@@ -55,6 +55,7 @@ fun SettingsScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
     val verify by vm.verifyHashes.collectAsStateWithLifecycle()
     val overwrite by vm.overwriteSaves.collectAsStateWithLifecycle()
     val finalize by vm.copyFinalize.collectAsStateWithLifecycle()
+    val installFinalizer by vm.installFinalizerTitle.collectAsStateWithLifecycle()
     val status by vm.keyStatus.collectAsStateWithLifecycle()
     var showLicenses by remember { mutableStateOf(false) }
     var confirmForget by remember { mutableStateOf(false) }
@@ -126,6 +127,12 @@ fun SettingsScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
                     description = stringResource(R.string.settings_finalize_desc),
                     checked = finalize,
                     onChange = { vm.setCopyFinalize(it) },
+                )
+                SwitchRow(
+                    title = stringResource(R.string.settings_finalizer_title),
+                    description = stringResource(R.string.settings_finalizer_title_desc),
+                    checked = installFinalizer,
+                    onChange = { vm.setInstallFinalizerTitle(it) },
                 )
             }
         }

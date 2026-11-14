@@ -13,6 +13,7 @@
 
 #define CIFINISH_PATH "/cifinish.bin"
 #define NAMES_PATH "/dreamfinalize-names.txt"
+#define FINALIZER_TITLE_ID 0x000400000FF4D100ULL
 
 #define COLOR_BG      C2D_Color32(0x08, 0x06, 0x0D, 0xFF)
 #define COLOR_CARD    C2D_Color32(0x15, 0x0E, 0x21, 0xFF)
@@ -336,9 +337,10 @@ static void truncate_name(const char *name, char *out, size_t out_size, size_t m
 	strncat(out, "...", out_size - strlen(out) - 1);
 }
 
-static int count_status(TitleResult *results, int count, int status) {
+static int count_status(TitleResult *results, TitleEntry *entries, int count, int status) {
 	int n = 0;
 	for (int i = 0; i < count; i++) {
+		if (entries[i].title_id == FINALIZER_TITLE_ID) continue;
 		int s;
 		if (!results[i].ticket_ok || !results[i].valid) s = 3;
 		else if (results[i].seed_required && !results[i].seed_ok) s = 2;
@@ -359,43 +361,44 @@ static void draw_top(TitleEntry *entries, int count, TitleResult *results) {
 	draw_text(g_text_buf, "DreamInstallFinalize", 16, 12, 0.82f, COLOR_TEXT);
 	draw_text(g_text_buf, "Finalizador de instalacoes", 17, 38, 0.50f, COLOR_DIM);
 
-	char line[128];
-	if (count > 0) {
-		snprintf(line, sizeof(line), "%d instalado(s)   %d ja estava(m)   %d falhou/falharam",
-		         count_status(results, count, 0), count_status(results, count, 1),
-		         count_status(results, count, 3));
-		draw_text(g_text_buf, line, 16, 54, 0.48f, COLOR_DIM);
-	} else if (g_message[0]) {
-		draw_text(g_text_buf, g_message, 16, 56, 0.52f, COLOR_WARN);
+	int visible[64];
+	int visible_count = 0;
+	for (int i = 0; i < count && visible_count < 64; i++) {
+		if (entries[i].title_id != FINALIZER_TITLE_ID) visible[visible_count++] = i;
 	}
 
-	int rows = count < MAX_ROWS ? count : MAX_ROWS;
-	for (int i = 0; i < rows; i++) {
-		float y = 78 + i * 29;
+	char line[128];
+	if (visible_count > 0) {
+		snprintf(line, sizeof(line), "%d instalado(s)   %d ja estava(m)   %d falhou/falharam",
+		         count_status(results, entries, count, 0), count_status(results, entries, count, 1),
+		         count_status(results, entries, count, 3));
+		draw_text(g_text_buf, line, 16, 54, 0.48f, COLOR_DIM);
+	} else {
+		draw_text(g_text_buf, g_message[0] ? g_message : "Nenhum jogo para finalizar.", 16, 56, 0.52f, COLOR_WARN);
+	}
+
+	int rows = visible_count < MAX_ROWS ? visible_count : MAX_ROWS;
+	for (int r = 0; r < rows; r++) {
+		int i = visible[r];
+		float y = 78 + r * 29;
 		C2D_DrawRectSolid(14, y, 0.5f, 372, 25, COLOR_CARD);
 		C2D_DrawRectSolid(14, y, 0.5f, 3, 25, COLOR_BORDER);
 
-		int status;
 		u32 status_color;
 		const char *status_text;
 		if (!results[i].ticket_ok || !results[i].valid) {
-			status = 3;
 			status_color = COLOR_BAD;
 			status_text = "Falhou";
 		} else if (results[i].seed_required && !results[i].seed_ok) {
-			status = 2;
 			status_color = COLOR_WARN;
 			status_text = "Seed falhou";
 		} else if (results[i].had_ticket) {
-			status = 1;
 			status_color = COLOR_DIM;
 			status_text = "Ja estava";
 		} else {
-			status = 0;
 			status_color = COLOR_OK;
 			status_text = "Finalizado";
 		}
-		(void)status;
 		C2D_DrawRectSolid(14, y, 0.5f, 3, 25, status_color);
 		const char *name = find_name(entries[i].title_id);
 		char display[80];
@@ -414,8 +417,8 @@ static void draw_top(TitleEntry *entries, int count, TitleResult *results) {
 		draw_text(g_text_buf, status_text, 330, y + 6, 0.42f, status_color);
 	}
 
-	if (count > MAX_ROWS) {
-		snprintf(line, sizeof(line), "+%d outro(s) titulo(s)", count - MAX_ROWS);
+	if (visible_count > MAX_ROWS) {
+		snprintf(line, sizeof(line), "+%d outro(s) jogo(s)", visible_count - MAX_ROWS);
 		draw_text(g_text_buf, line, 16, 78 + MAX_ROWS * 29, 0.45f, COLOR_DIM);
 	}
 }

@@ -59,6 +59,7 @@ class InstallE2ETest {
             verifyHashes = true,
             overwriteSaves = false,
             copyFinalizeProgram = true,
+            installFinalizerTitle = true,
             log = { logs.add(it) },
             onTitleState = { _, _, _ -> states++ },
             onBytes = { _, _, _ -> },
@@ -93,8 +94,11 @@ class InstallE2ETest {
         assertTrue(layout.titleDb.length() > 0)
         assertTrue(File(layout.root, "cifinish.bin").exists())
         assertTrue(result.finalizer3dsxCopied && result.finalizerCiaCopied)
+        assertTrue(result.finalizerTitleInstalled)
         assertTrue(File(layout.root, "3ds/DreamInstallFinalize.3dsx").isFile)
         assertTrue(File(layout.root, "cias/DreamInstallFinalize.cia").isFile)
+        assertTrue(File(layout.titlePath, "00040000/0ff4d100").isDirectory)
+        assertTrue(File(context.cacheDir, "title-db/000400000ff4d100").isFile)
         val names = File(layout.root, "dreamfinalize-names.txt").readText()
         assertTrue(names.contains("000400000ff40a00"))
         assertTrue(names.contains("000400000ff40b00"))

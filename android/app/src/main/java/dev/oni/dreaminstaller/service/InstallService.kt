@@ -83,6 +83,7 @@ class InstallService : Service() {
                 verifyHashes = request.verifyHashes,
                 overwriteSaves = request.overwriteSaves,
                 copyFinalizeProgram = request.copyFinalize,
+                installFinalizerTitle = request.installFinalizerTitle,
                 log = { appendLog(it) },
                 onTitleState = { index, state, message -> updateTitle(index, state, message) },
                 onBytes = { index, written, total ->
