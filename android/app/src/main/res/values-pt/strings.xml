@@ -1,0 +1,111 @@
+<resources>
+    <string name="app_name">DreamInstaller</string>
+    <string name="app_subtitle">3DS · 2DS · instalador de SD</string>
+
+    <string name="tab_install">Instalar</string>
+    <string name="tab_settings">Ajustes</string>
+
+    <string name="keys_title">Chaves do console</string>
+    <string name="keys_hint">Extraídas do seu próprio console. Nunca saem do celular.</string>
+    <string name="key_missing">faltando</string>
+    <string name="key_ok">pronto</string>
+    <string name="key_optional">opcional</string>
+    <string name="replace">Trocar</string>
+    <string name="add">Adicionar</string>
+
+    <string name="sd_title">Cartão SD</string>
+    <string name="sd_free">%1$s livres</string>
+    <string name="sd_free_unknown">espaço livre desconhecido</string>
+    <string name="sd_none">Nenhum cartão encontrado. Use um leitor ou o slot do celular.</string>
+    <string name="sd_refresh">Atualizar</string>
+    <string name="sd_change">Trocar</string>
+    <string name="sd_not_ready">Este cartão não tem a pasta Nintendo 3DS do seu console.</string>
+    <string name="grant_title">Acesso a todos os arquivos</string>
+    <string name="grant_text">O DreamInstaller grava dentro do cartão SD, então o Android precisa liberar as pastas reais.</string>
+    <string name="grant_button">Abrir ajustes</string>
+
+    <string name="queue_title">Fila</string>
+    <string name="queue_empty">Adicione arquivos CIA para começar. Nada é baixado da internet.</string>
+    <string name="add_cias">Adicionar CIAs</string>
+    <string name="clear_queue">Limpar</string>
+    <string name="remove">Remover</string>
+
+    <string name="kind_game">Jogo</string>
+    <string name="kind_update">Atualização</string>
+    <string name="kind_dlc">DLC</string>
+    <string name="kind_other">Título</string>
+
+    <string name="install_one">Instalar 1 título · %1$s</string>
+    <string name="install_many">Instalar %1$d títulos · %2$s</string>
+
+    <string name="state_waiting">Pronto</string>
+    <string name="state_writing">Gravando</string>
+    <string name="state_finishing">Finalizando</string>
+    <string name="state_done">Instalado</string>
+    <string name="state_failed">Falhou</string>
+    <string name="state_skipped">Pulado</string>
+
+    <string name="error_seed_missing">Seed ausente: adicione seeddb.bin</string>
+    <string name="error_keys">Adicione boot9.bin e movable.sed primeiro.</string>
+    <string name="error_sd">Escolha o cartão SD primeiro.</string>
+    <string name="error_seeddb">seeddb.bin está faltando. Jogos de 2015 em diante vão falhar.</string>
+    <string name="error_invalid_key">Não foi possível ler esse arquivo de chave.</string>
+
+    <string name="install_running">Instalando %1$d de %2$d</string>
+    <string name="install_overall">%1$d%% do lote</string>
+    <string name="install_title_progress">%1$d%% deste título</string>
+    <string name="install_speed">%1$s/s</string>
+    <string name="install_eta">%1$s restantes</string>
+    <string name="cancel">Cancelar</string>
+    <string name="cancel_hint">Cancelar após este título</string>
+    <string name="cancelling">Parando após este título…</string>
+    <string name="log">Log</string>
+
+    <string name="finalize_title">Último passo, no 3DS</string>
+    <string name="finalize_text">Rode custom-install-finalize no Homebrew Launcher. Ele instala o ticket e a seed.</string>
+    <string name="finalize_copied">custom-install-finalize.3dsx foi copiado para /3ds no cartão.</string>
+
+    <string name="result_done">%1$d instalado(s)</string>
+    <string name="result_failed">%1$d com falha</string>
+    <string name="result_icons">A HOME Menu mostra só 300 ícones. Há %1$d aplicativos no cartão.</string>
+    <string name="backup_done">Backup do banco salvo em %1$s</string>
+
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_look">Visual</string>
+    <string name="settings_accent">Cor de destaque</string>
+    <string name="settings_behaviour">Comportamento</string>
+    <string name="settings_verify">Conferir hash dos conteúdos</string>
+    <string name="settings_verify_desc">Mais lento, mas pega CIA corrompido antes de gravar no cartão.</string>
+    <string name="settings_overwrite">Sobrescrever saves existentes</string>
+    <string name="settings_overwrite_desc">Desligado mantém o save que já está no cartão.</string>
+    <string name="settings_finalize">Copiar finalize.3dsx automaticamente</string>
+    <string name="settings_finalize_desc">Coloca o ajudante de ticket em /3ds após instalar.</string>
+    <string name="settings_keys">Chaves</string>
+    <string name="settings_clear_keys">Esquecer chaves</string>
+    <string name="settings_about">Sobre</string>
+    <string name="settings_licenses">Licenças</string>
+    <string name="settings_version">Versão %1$s</string>
+    <string name="about_text">Instala títulos direto no cartão SD do 3DS, como o custom-install faz no PC. Títulos, seeds e chaves ficam no seu celular e no cartão. Sem permissão de internet.</string>
+    <string name="licenses_text">DreamInstaller é licenciado sob MIT.\n\ncustom-install, o fluxo que este app porta, é MIT, copyright Ian Burgwin.\n\nsave3ds, usado para editar o banco de títulos, é MIT ou Apache-2.0, copyright Weiyi Wang.\n\npyctr, usado como referência de crypto e formatos, é MIT, copyright Ian Burgwin.\n\nFredoka e Hanken Grotesk estão sob a SIL Open Font License 1.1.</string>
+
+    <string name="accent_purple">Roxo</string>
+    <string name="accent_indigo">Índigo</string>
+    <string name="accent_blue">Azul</string>
+    <string name="accent_teal">Verde-azulado</string>
+    <string name="accent_green">Verde</string>
+    <string name="accent_amber">Âmbar</string>
+    <string name="accent_orange">Laranja</string>
+    <string name="accent_pink">Rosa</string>
+
+    <string name="ok">OK</string>
+    <string name="close">Fechar</string>
+    <string name="retry">Tentar de novo</string>
+    <string name="done">Concluir</string>
+    <string name="notifications_denied">Notificações desligadas, o progresso fica só no app.</string>
+    <string name="notification_channel">Progresso da instalação</string>
+    <string name="notification_title">DreamInstaller</string>
+    <string name="notification_text">Instalando %1$d de %2$d</string>
+    <string name="notification_done">Instalação concluída</string>
+    <string name="crash_title">Algo deu errado</string>
+    <string name="crash_text">%1$s</string>
+</resources>

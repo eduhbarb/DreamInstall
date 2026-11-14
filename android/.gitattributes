@@ -1,0 +1,24 @@
+* text=auto
+
+*.kt text
+*.kts text
+*.xml text
+*.md text
+*.yml text
+*.json text
+*.pro text
+*.properties text
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+gradlew text eol=lf
+gradlew.bat text eol=crlf
+
+*.so binary
+*.bin binary
+*.cia binary
+*.sed binary
+*.db binary
+*.3dsx binary
+*.ttf binary
+*.png binary
+*.jar binary

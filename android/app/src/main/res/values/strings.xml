@@ -1,0 +1,111 @@
+<resources>
+    <string name="app_name">DreamInstaller</string>
+    <string name="app_subtitle">3DS · 2DS · SD card installer</string>
+
+    <string name="tab_install">Install</string>
+    <string name="tab_settings">Settings</string>
+
+    <string name="keys_title">Console keys</string>
+    <string name="keys_hint">Dumped from your own console. Never leaves the phone.</string>
+    <string name="key_missing">missing</string>
+    <string name="key_ok">ready</string>
+    <string name="key_optional">optional</string>
+    <string name="replace">Replace</string>
+    <string name="add">Add</string>
+
+    <string name="sd_title">SD card</string>
+    <string name="sd_free">%1$s free</string>
+    <string name="sd_free_unknown">free space unknown</string>
+    <string name="sd_none">No card found. Insert it through a reader or the phone slot.</string>
+    <string name="sd_refresh">Refresh</string>
+    <string name="sd_change">Change</string>
+    <string name="sd_not_ready">This card has no Nintendo 3DS folder for your console.</string>
+    <string name="grant_title">All files access</string>
+    <string name="grant_text">DreamInstaller writes inside the SD card, so Android has to let it see real folders.</string>
+    <string name="grant_button">Open settings</string>
+
+    <string name="queue_title">Queue</string>
+    <string name="queue_empty">Add CIA files to start. Nothing is copied from the internet.</string>
+    <string name="add_cias">Add CIAs</string>
+    <string name="clear_queue">Clear</string>
+    <string name="remove">Remove</string>
+
+    <string name="kind_game">Game</string>
+    <string name="kind_update">Update</string>
+    <string name="kind_dlc">DLC</string>
+    <string name="kind_other">Title</string>
+
+    <string name="install_one">Install 1 title · %1$s</string>
+    <string name="install_many">Install %1$d titles · %2$s</string>
+
+    <string name="state_waiting">Ready</string>
+    <string name="state_writing">Writing</string>
+    <string name="state_finishing">Finishing</string>
+    <string name="state_done">Installed</string>
+    <string name="state_failed">Failed</string>
+    <string name="state_skipped">Skipped</string>
+
+    <string name="error_seed_missing">Seed missing: add seeddb.bin</string>
+    <string name="error_keys">Add boot9.bin and movable.sed first.</string>
+    <string name="error_sd">Choose the SD card first.</string>
+    <string name="error_seeddb">seeddb.bin is missing. Games from 2015 on will fail.</string>
+    <string name="error_invalid_key">Could not read that key file.</string>
+
+    <string name="install_running">Installing %1$d of %2$d</string>
+    <string name="install_overall">%1$d%% of the batch</string>
+    <string name="install_title_progress">%1$d%% of this title</string>
+    <string name="install_speed">%1$s/s</string>
+    <string name="install_eta">%1$s left</string>
+    <string name="cancel">Cancel</string>
+    <string name="cancel_hint">Cancel after this title</string>
+    <string name="cancelling">Stopping after this title…</string>
+    <string name="log">Log</string>
+
+    <string name="finalize_title">Last step, on the 3DS</string>
+    <string name="finalize_text">Run custom-install-finalize in the Homebrew Launcher. It installs the ticket and the seed.</string>
+    <string name="finalize_copied">custom-install-finalize.3dsx was copied to /3ds on the card.</string>
+
+    <string name="result_done">%1$d installed</string>
+    <string name="result_failed">%1$d failed</string>
+    <string name="result_icons">The HOME Menu shows only 300 icons. %1$d applications are on the card.</string>
+    <string name="backup_done">Database backup saved in %1$s</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="settings_look">Look</string>
+    <string name="settings_accent">Accent</string>
+    <string name="settings_behaviour">Behaviour</string>
+    <string name="settings_verify">Check content hashes</string>
+    <string name="settings_verify_desc">Slower, but catches a corrupt CIA before it reaches the card.</string>
+    <string name="settings_overwrite">Overwrite existing saves</string>
+    <string name="settings_overwrite_desc">Off keeps the save already on the card.</string>
+    <string name="settings_finalize">Copy finalize.3dsx automatically</string>
+    <string name="settings_finalize_desc">Puts the ticket helper in /3ds after a successful install.</string>
+    <string name="settings_keys">Keys</string>
+    <string name="settings_clear_keys">Forget keys</string>
+    <string name="settings_about">About</string>
+    <string name="settings_licenses">Licenses</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="about_text">Installs titles straight to the 3DS SD card, the way custom-install does on a PC. Titles, seeds and keys stay on your phone and card. No network permission.</string>
+    <string name="licenses_text">DreamInstaller is MIT licensed.\n\ncustom-install, the install pipeline this app ports, is MIT licensed, copyright Ian Burgwin.\n\nsave3ds, used to edit the title database, is MIT or Apache-2.0 licensed, copyright Weiyi Wang.\n\npyctr, used as the reference for the crypto and file formats, is MIT licensed, copyright Ian Burgwin.\n\nFredoka and Hanken Grotesk are under the SIL Open Font License 1.1.</string>
+
+    <string name="accent_purple">Purple</string>
+    <string name="accent_indigo">Indigo</string>
+    <string name="accent_blue">Blue</string>
+    <string name="accent_teal">Teal</string>
+    <string name="accent_green">Green</string>
+    <string name="accent_amber">Amber</string>
+    <string name="accent_orange">Orange</string>
+    <string name="accent_pink">Pink</string>
+
+    <string name="ok">OK</string>
+    <string name="close">Close</string>
+    <string name="retry">Retry</string>
+    <string name="done">Done</string>
+    <string name="notifications_denied">Notifications are off, so progress stays inside the app.</string>
+    <string name="notification_channel">Install progress</string>
+    <string name="notification_title">DreamInstaller</string>
+    <string name="notification_text">Installing %1$d of %2$d</string>
+    <string name="notification_done">Install finished</string>
+    <string name="crash_title">Something went wrong</string>
+    <string name="crash_text">%1$s</string>
+</resources>
