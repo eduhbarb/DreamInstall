@@ -1,0 +1,75 @@
+name: 3ds
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "3ds/**"
+      - ".github/workflows/3ds.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MAKEROM_URL: https://github.com/3DSGuy/Project_CTR/releases/download/makerom-v0.19.0/makerom-v0.19.0-ubuntu_x86_64.zip
+      MAKEROM_SHA256: 287b809dec064e0ad597e3d272c49ecb7eed41693d5ee6fef9d8a8aa24c2497e
+      BANNERTOOL_URL: https://github.com/diasurgical/bannertool/releases/download/1.2.0/bannertool.zip
+      BANNERTOOL_SHA256: 69768596f836acb3e3aeaa66e47c6ba560dde813c6dfcd33c8afc25fe29b7524
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build 3dsx in devkitARM
+        run: |
+          docker run --rm \
+            -v "$PWD/3ds/DreamInstallFinalize:/work" \
+            -w /work \
+            devkitpro/devkitarm:latest \
+            bash -lc '
+              set -e
+              if [ ! -d /opt/devkitpro/libctru ]; then
+                if command -v dkp-pacman >/dev/null 2>&1; then PM=dkp-pacman; else PM=pacman; fi
+                "$PM" -S --noconfirm --needed 3ds-dev
+              fi
+              make
+            '
+
+      - name: Install makerom and bannertool
+        run: |
+          tools="$RUNNER_TEMP/tools"
+          mkdir -p "$tools/bin"
+          curl -fsSLo "$tools/makerom.zip" "$MAKEROM_URL"
+          curl -fsSLo "$tools/bannertool.zip" "$BANNERTOOL_URL"
+          echo "$MAKEROM_SHA256  $tools/makerom.zip" | sha256sum -c
+          echo "$BANNERTOOL_SHA256  $tools/bannertool.zip" | sha256sum -c
+          unzip -q -j "$tools/makerom.zip" makerom -d "$tools/bin"
+          unzip -q -j "$tools/bannertool.zip" linux-x86_64/bannertool -d "$tools/bin"
+          chmod +x "$tools/bin/makerom" "$tools/bin/bannertool"
+          echo "$tools/bin" >> "$GITHUB_PATH"
+
+      - name: Build CIA
+        working-directory: 3ds/DreamInstallFinalize
+        run: |
+          set -e
+          bannertool makebanner -i meta/banner.png -a meta/audio.wav -o banner.bin
+          makerom -f cia -o DreamInstallFinalize.cia \
+            -target t \
+            -elf DreamInstallFinalize.elf \
+            -rsf meta/DreamInstallFinalize.rsf \
+            -icon DreamInstallFinalize.smdh \
+            -banner banner.bin \
+            -exefslogo
+          ls -l DreamInstallFinalize.3dsx DreamInstallFinalize.cia DreamInstallFinalize.smdh
+          sha256sum DreamInstallFinalize.3dsx DreamInstallFinalize.cia | tee SHA256SUMS
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: DreamInstallFinalize
+          path: |
+            3ds/DreamInstallFinalize/DreamInstallFinalize.3dsx
+            3ds/DreamInstallFinalize/DreamInstallFinalize.cia
+            3ds/DreamInstallFinalize/DreamInstallFinalize.smdh
+            3ds/DreamInstallFinalize/SHA256SUMS
+          if-no-files-found: error
