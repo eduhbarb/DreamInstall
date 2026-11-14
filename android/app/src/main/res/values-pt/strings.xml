@@ -11,6 +11,9 @@
     <string name="key_ok">pronto</string>
     <string name="key_optional">opcional</string>
     <string name="replace">Trocar</string>
+    <string name="keys_scan">Buscar no cartão</string>
+    <string name="keys_found">Chaves encontradas no cartão: %1$s</string>
+    <string name="keys_not_found">Nenhum boot9.bin, movable.sed ou seeddb.bin encontrado no cartão.</string>
     <string name="add">Adicionar</string>
 
     <string name="sd_title">Cartão SD</string>

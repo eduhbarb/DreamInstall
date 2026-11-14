@@ -54,7 +54,7 @@ O plano é ter, no futuro, um finalizador próprio em `3ds/` para substituir o
 
 Baixe o APK em
 [Releases](https://github.com/eduhbarb/DreamInstaller/releases/latest) e instale no celular.
-O arquivo da versão atual é `DreamInstaller-1.0.0.apk`.
+O arquivo da versão atual é `DreamInstaller-1.0.1.apk`.
 
 - Android 11 ou mais novo, arm64.
 - O APK é assinado com uma chave de desenvolvimento, então não vem da Play Store.
@@ -84,6 +84,21 @@ No app, toque em **Adicionar** ao lado de cada arquivo. As chaves são copiadas 
 armazenamento privado do app e nunca saem do aparelho. O botão **Esquecer chaves** em Ajustes
 apaga tudo.
 
+Assim que você escolhe o cartão SD, o app procura as chaves sozinho, nos mesmos lugares do
+GUI do custom-install no PC:
+
+```
+SD/gm9/out/boot9.bin
+SD/gm9/out/movable.sed
+SD/gm9/out/seeddb.bin
+SD/boot9strap/<arquivo>
+SD/<arquivo>
+```
+
+O que faltar é copiado e carregado automaticamente. Se você já tem chaves no app, elas não são
+substituídas; use **Buscar no cartão** no card **Chaves do console** para forçar a troca pelas
+do cartão. A busca também aceita maiúsculas/minúsculas diferentes nos nomes.
+
 O app não inclui chaves, tickets nem jogos. Use apenas `.cia` que você tem o direito de usar.
 
 ### 3. Conectar o cartão SD
@@ -93,7 +108,8 @@ o cartão do 3DS.
 
 1. Desligue o 3DS e tire o cartão.
 2. Conecte o cartão no celular.
-3. No app, toque em **Trocar** na seção **Cartão SD** e escolha o volume.
+3. No app, toque em **Trocar** na seção **Cartão SD** e escolha o volume. Ao selecionar, o app
+   já procura `boot9.bin`, `movable.sed` e `seeddb.bin` no cartão.
 4. O app valida se existe `Nintendo 3DS/<id0>` correspondente ao seu `movable.sed`.
 
 Se aparecer **id0 não encontrado**, o cartão não foi usado nesse console ou o `movable.sed` é

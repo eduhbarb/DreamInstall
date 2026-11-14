@@ -199,39 +199,6 @@ fun InstallScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
 
         item {
             DreamCard {
-                SectionTitle(stringResource(R.string.keys_title))
-                Text(
-                    stringResource(R.string.keys_hint),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color(palette.dim),
-                )
-                Spacer(Modifier.height(10.dp))
-                KeyRow(
-                    name = "boot9.bin",
-                    subtitle = if (keyStatus.error != null) keyStatus.error!! else null,
-                    present = keyStatus.boot9,
-                    onClick = { boot9Launcher.launch(arrayOf("*/*")) },
-                )
-                KeyRow(
-                    name = "movable.sed",
-                    present = keyStatus.movable,
-                    onClick = { movableLauncher.launch(arrayOf("*/*")) },
-                )
-                KeyRow(
-                    name = "seeddb.bin",
-                    present = keyStatus.seeddb,
-                    optional = true,
-                    onClick = { seeddbLauncher.launch(arrayOf("*/*")) },
-                )
-                if (keyStatus.boot9 && keyStatus.movable && !keyStatus.seeddb) {
-                    Spacer(Modifier.height(8.dp))
-                    LineNote(stringResource(R.string.error_seeddb), ChipTone.Warn, Icons.Filled.Warning)
-                }
-            }
-        }
-
-        item {
-            DreamCard {
                 SectionTitle(
                     stringResource(R.string.sd_title),
                     trailing = {
@@ -258,6 +225,48 @@ fun InstallScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
                         Spacer(Modifier.height(10.dp))
                         LineNote(layoutError!!, ChipTone.Warn, Icons.Filled.Warning)
                     }
+                }
+            }
+        }
+
+        item {
+            DreamCard {
+                SectionTitle(
+                    stringResource(R.string.keys_title),
+                    trailing = {
+                        if (selectedRoot != null) {
+                            TextButton(onClick = { vm.scanCardForKeys(overwrite = true) }) {
+                                Text(stringResource(R.string.keys_scan), style = MaterialTheme.typography.labelSmall)
+                            }
+                        }
+                    },
+                )
+                Text(
+                    stringResource(R.string.keys_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(palette.dim),
+                )
+                Spacer(Modifier.height(10.dp))
+                KeyRow(
+                    name = "boot9.bin",
+                    subtitle = if (keyStatus.error != null) keyStatus.error!! else null,
+                    present = keyStatus.boot9,
+                    onClick = { boot9Launcher.launch(arrayOf("*/*")) },
+                )
+                KeyRow(
+                    name = "movable.sed",
+                    present = keyStatus.movable,
+                    onClick = { movableLauncher.launch(arrayOf("*/*")) },
+                )
+                KeyRow(
+                    name = "seeddb.bin",
+                    present = keyStatus.seeddb,
+                    optional = true,
+                    onClick = { seeddbLauncher.launch(arrayOf("*/*")) },
+                )
+                if (keyStatus.boot9 && keyStatus.movable && !keyStatus.seeddb) {
+                    Spacer(Modifier.height(8.dp))
+                    LineNote(stringResource(R.string.error_seeddb), ChipTone.Warn, Icons.Filled.Warning)
                 }
             }
         }

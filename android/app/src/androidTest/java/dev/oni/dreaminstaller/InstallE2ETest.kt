@@ -92,6 +92,8 @@ class InstallE2ETest {
         assertEquals(2, result.done.size)
         assertTrue(layout.titleDb.length() > 0)
         assertTrue(File(layout.root, "cifinish.bin").exists())
+        assertTrue(result.finalizeCopied)
+        assertTrue(File(layout.root, "3ds/custom-install-finalize.3dsx").length() > 0)
     }
 
     private fun manifest(root: File): String {

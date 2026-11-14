@@ -149,6 +149,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
                 prefs.edit().putString("sd", chosen.root.absolutePath).apply()
             }
             updateLayout()
+            if (chosen != null) scanCardForKeys(overwrite = false)
         }
     }
 
@@ -156,6 +157,51 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         selectedRoot.value = root
         prefs.edit().putString("sd", root.absolutePath).apply()
         updateLayout()
+        scanCardForKeys(overwrite = false)
+    }
+
+    /**
+     * Copies boot9.bin, movable.sed and seeddb.bin from the SD card when they sit in the
+     * places custom-install's PC GUI checks (SD/gm9/out, SD/boot9strap, SD root).
+     */
+    fun scanCardForKeys(overwrite: Boolean) {
+        val root = selectedRoot.value ?: return
+        viewModelScope.launch {
+            val app = getApplication<Application>()
+            val found = withContext(Dispatchers.IO) { Storage.findConsoleFiles(root) }
+            if (!found.any) {
+                if (overwrite) show(app.getString(R.string.keys_not_found))
+                return@launch
+            }
+            val imported = withContext(Dispatchers.IO) {
+                val list = mutableListOf<String>()
+                fun tryCopy(source: File?, name: String) {
+                    if (source == null) return
+                    val target = File(keyDir, name)
+                    if (!overwrite && target.isFile) return
+                    val bytes = runCatching { source.readBytes() }.getOrNull() ?: return
+                    val valid = when (name) {
+                        "boot9.bin" -> bytes.size == 0x10000
+                        "movable.sed" -> bytes.size == 0x120 || bytes.size == 0x140
+                        else -> bytes.size >= 0x10
+                    }
+                    if (!valid) return
+                    if (target.isFile && target.readBytes().contentEquals(bytes)) return
+                    target.writeBytes(bytes)
+                    list.add(name)
+                }
+                tryCopy(found.boot9, "boot9.bin")
+                tryCopy(found.movable, "movable.sed")
+                tryCopy(found.seeddb, "seeddb.bin")
+                list
+            }
+            if (imported.isNotEmpty()) {
+                loadKeys()
+                show(app.getString(R.string.keys_found, imported.joinToString(", ")))
+            } else if (overwrite) {
+                show(app.getString(R.string.keys_not_found))
+            }
+        }
     }
 
     fun setKey(kind: KeyKind, uri: Uri) {
