@@ -9,9 +9,9 @@ The app reads the `.cia`, writes `.app`/`.tmd` to the card, builds the `cmd`, up
 with `save3ds`, and leaves a `cifinish.bin` for the last step on the console. It is not a network
 install, and it does not go through FBI.
 
-## About this fork
+## About this project
 
-This repository is a fork of
+This repository is derived from
 [ihaveamac/custom-install](https://github.com/ihaveamac/custom-install). The original Python code
 stays at the root and the Android version lives in [`android/`](android/). The original README is
 kept at [docs/custom-install-README.md](docs/custom-install-README.md).
