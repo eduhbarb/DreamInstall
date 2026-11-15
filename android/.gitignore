@@ -12,3 +12,9 @@ captures/
 # APKs produced locally
 *.apk
 *.aab
+
+# Release signing material: never commit
+*.jks
+*.keystore
+key.properties
+keystore-password*

@@ -55,12 +55,17 @@ O finalizador próprio fica em `3ds/` e é copiado para o cartão pelo app.
 
 Baixe o APK em
 [Releases](https://github.com/eduhbarb/DreamInstall/releases/latest) e instale no celular. O
-arquivo da versão atual é `DreamInstall-1.4.2.apk`.
+arquivo da versão atual é `DreamInstall-1.4.3.apk`.
 
 - Android 11 ou mais novo, arm64.
-- O APK é assinado com uma chave de desenvolvimento, então não vem da Play Store.
+- Os APKs oficiais são assinados com a chave de release do DreamInstall; build de sideload, não vem
+  da Play Store.
 - Em MIUI/HyperOS, libere **Instalar via USB** ou abra o APK pelo gerenciador de arquivos. Se o
   sistema bloquear a instalação por USB, copie o APK para o celular e toque nele.
+
+**Mudança de assinatura na 1.4.3:** as versões até 1.4.2 usavam uma chave de debug, então o Android
+não consegue atualizá-las por cima. Desinstale a 1.4.2 antes de instalar a 1.4.3; isso apaga as
+chaves e a fila do app.
 
 Na primeira abertura, o app pede **Acesso a todos os arquivos**. Isso é necessário porque ele grava
 em caminhos reais do cartão (`/storage/XXXX-XXXX`). Sem essa permissão o cartão não aparece. O app
@@ -237,17 +242,21 @@ cd android
 
 O APK sai em `android/app/build/outputs/apk/debug/app-debug.apk`.
 
-Build de release (assinado com a chave de debug local, só para sideload):
+Build de release. As releases oficiais usam a chave de release do DreamInstall, lida de variáveis de
+ambiente; sem elas o Gradle cai na chave de debug local:
 
 ```powershell
+$env:DREAMINSTALL_KEYSTORE = "C:\caminho\para\dreaminstall-release.jks"
+$env:DREAMINSTALL_KEYSTORE_PASSWORD = "..."
+$env:DREAMINSTALL_KEY_ALIAS = "dreaminstall"
+$env:DREAMINSTALL_KEY_PASSWORD = "..."
+
 cd android
 .\gradlew.bat :app:assembleRelease
 ```
 
-O APK sai em `android/app/build/outputs/apk/release/app-release.apk`.
-
-Para assinar com a sua chave, troque `signingConfigs.getByName("debug")` em
-`android/app/build.gradle.kts` por uma configuração própria.
+O APK sai em `android/app/build/outputs/apk/release/app-release.apk`. Nunca comite a keystore nem as
+senhas.
 
 ### Recompilar o finalizador 3DS
 

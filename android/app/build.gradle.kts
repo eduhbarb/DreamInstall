@@ -6,6 +6,14 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+// Official builds read the release key from the environment. The keystore and its password
+// never live in this repository. Without these variables a local build falls back to the debug
+// key, which is fine for development but cannot update an official install.
+val releaseKeystore = System.getenv("DREAMINSTALL_KEYSTORE")
+val releaseStorePassword = System.getenv("DREAMINSTALL_KEYSTORE_PASSWORD")
+val releaseKeyAlias = System.getenv("DREAMINSTALL_KEY_ALIAS") ?: "dreaminstall"
+val releaseKeyPassword = System.getenv("DREAMINSTALL_KEY_PASSWORD") ?: releaseStorePassword ?: ""
+
 android {
     namespace = "dev.oni.dreaminstall"
     compileSdk = 36
@@ -14,16 +22,27 @@ android {
         applicationId = "dev.oni.dreaminstall"
         minSdk = 30
         targetSdk = 36
-        versionCode = 11
-        versionName = "1.4.2"
+        versionCode = 12
+        versionName = "1.4.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        if (!releaseKeystore.isNullOrBlank() && !releaseStorePassword.isNullOrBlank()) {
+            create("release") {
+                storeFile = file(releaseKeystore)
+                storePassword = releaseStorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
-            // sideload build, signed with the local debug key so it installs without extra setup
-            signingConfig = signingConfigs.getByName("debug")
+            // Official releases use the release key; contributors without it get the debug key.
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
         debug {

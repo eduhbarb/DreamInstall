@@ -55,12 +55,16 @@ The finalizer lives in `3ds/` and is copied to the card by the app.
 
 Download the APK from
 [Releases](https://github.com/eduhbarb/DreamInstall/releases/latest) and install it on the phone.
-The current file is `DreamInstall-1.4.2.apk`.
+The current file is `DreamInstall-1.4.3.apk`.
 
 - Android 11 or newer, arm64.
-- The APK is signed with a development key, so it does not come from the Play Store.
+- Official APKs are signed with the DreamInstall release key; sideload build, not from the Play
+  Store.
 - On MIUI/HyperOS, allow **Install via USB** or open the APK from the file manager. If the system
   blocks a USB install, copy the APK to the phone and tap it there.
+
+**Signing change in 1.4.3:** releases up to 1.4.2 used a debug key, so Android cannot update them in
+place. Uninstall 1.4.2 before installing 1.4.3; this deletes the app's keys and queue.
 
 On the first launch the app asks for **All files access**. It needs that to write to real card
 paths (`/storage/XXXX-XXXX`). Without it the card does not show up. The app only uses the network
@@ -235,17 +239,21 @@ cd android
 
 The APK lands in `android/app/build/outputs/apk/debug/app-debug.apk`.
 
-Release build (signed with the local debug key, for sideload only):
+Release build. Official releases use a DreamInstall release key read from environment variables;
+without them Gradle falls back to the local debug key:
 
 ```powershell
+$env:DREAMINSTALL_KEYSTORE = "C:\path\to\dreaminstall-release.jks"
+$env:DREAMINSTALL_KEYSTORE_PASSWORD = "..."
+$env:DREAMINSTALL_KEY_ALIAS = "dreaminstall"
+$env:DREAMINSTALL_KEY_PASSWORD = "..."
+
 cd android
 .\gradlew.bat :app:assembleRelease
 ```
 
-The APK lands in `android/app/build/outputs/apk/release/app-release.apk`.
-
-To sign with your own key, replace `signingConfigs.getByName("debug")` in
-`android/app/build.gradle.kts` with your own configuration.
+The APK lands in `android/app/build/outputs/apk/release/app-release.apk`. Never commit the keystore
+or the passwords.
 
 ### Rebuilding the 3DS finalizer
 
