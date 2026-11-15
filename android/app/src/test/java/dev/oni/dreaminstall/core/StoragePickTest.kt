@@ -12,8 +12,8 @@ class StoragePickTest {
     @get:Rule
     val temp = TemporaryFolder()
 
-    private fun volume(name: String, removable: Boolean, has3ds: Boolean, root: File = File("/storage/$name")) =
-        SdVolume(root = root, label = name, removable = removable, freeBytes = 0L, has3ds = has3ds)
+    private fun volume(name: String, removable: Boolean, has3ds: Boolean) =
+        SdVolume(root = temp.newFolder(name), label = name, removable = removable, freeBytes = 0L, has3ds = has3ds)
 
     @Test
     fun ignoresInternalStorage() {
