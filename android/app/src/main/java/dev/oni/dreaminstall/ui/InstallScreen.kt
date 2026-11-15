@@ -77,6 +77,7 @@ import dev.oni.dreaminstall.core.TitleKind
 import dev.oni.dreaminstall.core.TitleState
 import dev.oni.dreaminstall.core.UpdateInfo
 import dev.oni.dreaminstall.core.formatSize
+import dev.oni.dreaminstall.ui.theme.LocalPalette
 import java.io.File
 import java.util.Locale
 import kotlin.math.max
@@ -145,12 +146,12 @@ fun InstallScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                start = 16.dp,
-                end = 16.dp,
-                top = 4.dp,
-                bottom = if (queue.isNotEmpty() && !install.running) 92.dp else 24.dp,
+                start = 12.dp,
+                end = 12.dp,
+                top = 2.dp,
+                bottom = if (queue.isNotEmpty() && !install.running) 88.dp else 20.dp,
             ),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             if (!granted) {
                 item { GrantCard(onOpenSettings = vm::openAllFilesSettings) }
@@ -199,7 +200,6 @@ fun InstallScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
                     root = selectedRoot,
                     layoutReady = layout != null,
                     layoutError = layoutError,
-                    onRefresh = vm::refreshVolumes,
                     onChange = { showVolumes = true },
                 )
             }
@@ -309,8 +309,8 @@ fun InstallScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
                     enabled = enabled,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 10.dp)
-                        .height(50.dp),
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .height(46.dp),
                 ) {
                     Icon(Icons.Filled.PlayArrow, contentDescription = null)
                     Spacer(Modifier.size(8.dp))
@@ -442,13 +442,12 @@ private fun SdCard(
     root: File?,
     layoutReady: Boolean,
     layoutError: String?,
-    onRefresh: () -> Unit,
     onChange: () -> Unit,
 ) {
     DreamCard {
         SectionLabel(stringResource(R.string.sd_title)) {
-            TextButton(onClick = onRefresh) {
-                Text(stringResource(R.string.sd_refresh), style = MaterialTheme.typography.labelSmall)
+            TextButton(onClick = onChange) {
+                Text(stringResource(R.string.sd_change), style = MaterialTheme.typography.labelSmall)
             }
         }
         if (root == null) {
@@ -457,21 +456,19 @@ private fun SdCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            Spacer(Modifier.height(8.dp))
-            OutlinedButton(onClick = onChange) { Text(stringResource(R.string.sd_change)) }
         } else {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Surface(
                     color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier.size(34.dp),
+                    modifier = Modifier.size(32.dp),
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             Icons.Filled.List,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.size(18.dp),
+                            modifier = Modifier.size(17.dp),
                         )
                     }
                 }
@@ -498,12 +495,9 @@ private fun SdCard(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-                TextButton(onClick = onChange) {
-                    Text(stringResource(R.string.sd_change), style = MaterialTheme.typography.labelSmall)
-                }
             }
             if (!layoutReady && layoutError != null) {
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(6.dp))
                 LineNote(layoutError, ChipTone.Warn, Icons.Filled.Warning)
             }
         }
@@ -534,7 +528,7 @@ private fun QueueCard(queue: List<QueueItem>, running: Boolean, onRemove: (Queue
         color = MaterialTheme.colorScheme.surfaceContainer,
         shape = MaterialTheme.shapes.large,
     ) {
-        Column(Modifier.padding(horizontal = 12.dp, vertical = 2.dp)) {
+        Column(Modifier.padding(horizontal = 10.dp, vertical = 1.dp)) {
             queue.forEachIndexed { index, item ->
                 if (index > 0) {
                     HorizontalDivider(color = MaterialTheme.colorScheme.surfaceContainerHighest)
@@ -548,7 +542,7 @@ private fun QueueCard(queue: List<QueueItem>, running: Boolean, onRemove: (Queue
 @Composable
 private fun QueueRow(item: QueueItem, running: Boolean, onRemove: () -> Unit) {
     Row(
-        Modifier.fillMaxWidth().padding(vertical = 9.dp),
+        Modifier.fillMaxWidth().padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -571,7 +565,7 @@ private fun QueueRow(item: QueueItem, running: Boolean, onRemove: () -> Unit) {
                 Text(
                     item.message,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFFE7B45C),
+                    color = Color(LocalPalette.current.warn),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -579,7 +573,7 @@ private fun QueueRow(item: QueueItem, running: Boolean, onRemove: () -> Unit) {
                 Text(
                     stringResource(R.string.error_seed_missing),
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color(0xFFE7B45C),
+                    color = Color(LocalPalette.current.warn),
                 )
             }
         }
@@ -674,14 +668,14 @@ private fun ResultCard(vm: AppViewModel, state: InstallState) {
             Text(
                 stringResource(R.string.result_done, result.done.size),
                 style = MaterialTheme.typography.titleSmall,
-                color = Color(0xFF8FE3B0),
+                color = Color(LocalPalette.current.ok),
             )
         }
         if (result.failed.isNotEmpty()) {
             Text(
                 stringResource(R.string.result_failed, result.failed.size),
                 style = MaterialTheme.typography.titleSmall,
-                color = Color(0xFFF08A80),
+                color = Color(LocalPalette.current.bad),
             )
             result.failed.entries.take(6).forEach { (name, reason) ->
                 Text(

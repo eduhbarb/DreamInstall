@@ -26,7 +26,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -41,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.oni.dreaminstall.AppViewModel
@@ -69,8 +69,8 @@ fun SettingsScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 28.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 2.dp, bottom = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item {
             DreamCard {
@@ -175,27 +175,27 @@ fun SettingsScreen(vm: AppViewModel, modifier: Modifier = Modifier) {
 
         item {
             DreamCard {
-                SectionLabel(stringResource(R.string.settings_keys))
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(stringResource(R.string.settings_keys).uppercase(), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    TextButton(
+                        onClick = { confirmForget = true },
+                        enabled = status.boot9 || status.movable || status.seeddb,
+                    ) {
+                        Text(stringResource(R.string.settings_clear_keys), style = MaterialTheme.typography.labelSmall)
+                    }
+                }
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     Chip("boot9", if (status.boot9) ChipTone.Ok else ChipTone.Warn, check = status.boot9)
                     Chip("movable", if (status.movable) ChipTone.Ok else ChipTone.Warn, check = status.movable)
                     Chip("seeddb", if (status.seeddb) ChipTone.Ok else ChipTone.Dim, check = status.seeddb)
                 }
                 if (status.error != null) {
-                    Spacer(Modifier.height(8.dp))
+                    Spacer(Modifier.height(6.dp))
                     LineNote(status.error!!, ChipTone.Bad)
-                }
-                Spacer(Modifier.height(10.dp))
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    OutlinedButton(
-                        onClick = { confirmForget = true },
-                        enabled = status.boot9 || status.movable || status.seeddb,
-                    ) {
-                        Text(stringResource(R.string.settings_clear_keys))
-                    }
                 }
             }
         }
@@ -340,7 +340,7 @@ private fun SettingSwitch(
     divider: Boolean = true,
 ) {
     Row(
-        Modifier.fillMaxWidth().padding(vertical = 5.dp),
+        Modifier.fillMaxWidth().padding(vertical = 3.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
     ) {
@@ -350,6 +350,8 @@ private fun SettingSwitch(
                 description,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         }
         Switch(checked = checked, onCheckedChange = onChange)

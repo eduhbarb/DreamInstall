@@ -41,7 +41,7 @@ import dev.oni.dreaminstall.ui.theme.LocalPalette
 @Composable
 fun DreamCard(
     modifier: Modifier = Modifier,
-    padding: Dp = 14.dp,
+    padding: Dp = 12.dp,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
@@ -75,16 +75,16 @@ enum class ChipTone { Ok, Warn, Bad, Dim, Accent }
 fun Chip(text: String, tone: ChipTone = ChipTone.Dim, check: Boolean = false) {
     val palette = LocalPalette.current
     val content = when (tone) {
-        ChipTone.Ok -> Color(0xFF8FE3B0)
-        ChipTone.Warn -> Color(0xFFE7B45C)
-        ChipTone.Bad -> Color(0xFFF08A80)
+        ChipTone.Ok -> Color(palette.ok)
+        ChipTone.Warn -> Color(palette.warn)
+        ChipTone.Bad -> Color(palette.bad)
         ChipTone.Dim -> MaterialTheme.colorScheme.onSurfaceVariant
         ChipTone.Accent -> Color(palette.highlight)
     }
     val container = when (tone) {
-        ChipTone.Ok -> Color(0xFF12251C)
-        ChipTone.Warn -> Color(0xFF261D10)
-        ChipTone.Bad -> Color(0xFF2A1412)
+        ChipTone.Ok -> Color(palette.okBg)
+        ChipTone.Warn -> Color(palette.warnBg)
+        ChipTone.Bad -> Color(palette.badBg)
         ChipTone.Dim -> MaterialTheme.colorScheme.surfaceContainerHigh
         ChipTone.Accent -> MaterialTheme.colorScheme.primaryContainer
     }
@@ -168,10 +168,11 @@ fun rgb565(data: ByteArray): ImageBitmap? {
 
 @Composable
 fun LineNote(text: String, tone: ChipTone = ChipTone.Dim, icon: ImageVector? = null) {
+    val palette = LocalPalette.current
     val edge = when (tone) {
-        ChipTone.Ok -> Color(0xFF54D08A)
-        ChipTone.Warn -> Color(0xFFE7B45C)
-        ChipTone.Bad -> Color(0xFFE44C3E)
+        ChipTone.Ok -> Color(palette.ok)
+        ChipTone.Warn -> Color(palette.warn)
+        ChipTone.Bad -> Color(palette.bad)
         ChipTone.Dim -> MaterialTheme.colorScheme.outline
         ChipTone.Accent -> MaterialTheme.colorScheme.primary
     }

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">DreamInstall</string>
-    <string name="app_subtitle">3DS · 2DS · instalador de SD</string>
+    <string name="app_subtitle">3DS · instalador de SD</string>
 
     <string name="tab_install">Instalar</string>
     <string name="tab_settings">Ajustes</string>
@@ -82,14 +82,14 @@
     <string name="settings_look">Visual</string>
     <string name="settings_accent">Cor de destaque</string>
     <string name="settings_behaviour">Comportamento</string>
-    <string name="settings_verify">Conferir hash dos conteúdos</string>
-    <string name="settings_verify_desc">Mais lento, mas pega CIA corrompido antes de gravar no cartão.</string>
-    <string name="settings_overwrite">Sobrescrever saves existentes</string>
-    <string name="settings_overwrite_desc">Desligado mantém o save que já está no cartão.</string>
-    <string name="settings_finalize">Copiar DreamInstallFinalize automaticamente</string>
-    <string name="settings_finalize_desc">Coloca o 3dsx em /3ds e o cia em /cias após instalar.</string>
-    <string name="settings_finalizer_title">Instalar DreamInstallFinalize na HOME</string>
-    <string name="settings_finalizer_title_desc">Adiciona o CIA como título se ele ainda não estiver instalado; o próximo finalize instala o ticket.</string>
+    <string name="settings_verify">Conferir hash</string>
+    <string name="settings_verify_desc">Pega CIA corrompido.</string>
+    <string name="settings_overwrite">Sobrescrever saves</string>
+    <string name="settings_overwrite_desc">Desligado mantém o save do cartão.</string>
+    <string name="settings_finalize">Copiar finalizador</string>
+    <string name="settings_finalize_desc">3dsx em /3ds e cia em /cias.</string>
+    <string name="settings_finalizer_title">Instalar na HOME</string>
+    <string name="settings_finalizer_title_desc">Adiciona como título.</string>
     <string name="settings_keys">Chaves</string>
     <string name="settings_clear_keys">Esquecer chaves</string>
     <string name="settings_updates">Atualizações</string>

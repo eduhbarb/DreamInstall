@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">DreamInstall</string>
-    <string name="app_subtitle">3DS · 2DS · SD card installer</string>
+    <string name="app_subtitle">3DS · SD card installer</string>
 
     <string name="tab_install">Install</string>
     <string name="tab_settings">Settings</string>
@@ -82,14 +82,14 @@
     <string name="settings_look">Look</string>
     <string name="settings_accent">Accent</string>
     <string name="settings_behaviour">Behaviour</string>
-    <string name="settings_verify">Check content hashes</string>
-    <string name="settings_verify_desc">Slower, but catches a corrupt CIA before it reaches the card.</string>
-    <string name="settings_overwrite">Overwrite existing saves</string>
-    <string name="settings_overwrite_desc">Off keeps the save already on the card.</string>
-    <string name="settings_finalize">Copy DreamInstallFinalize automatically</string>
-    <string name="settings_finalize_desc">Puts the 3dsx in /3ds and the cia in /cias after a successful install.</string>
-    <string name="settings_finalizer_title">Install DreamInstallFinalize on the HOME Menu</string>
-    <string name="settings_finalizer_title_desc">Adds its CIA as a title if it is not installed yet; the next finalize run installs the ticket.</string>
+    <string name="settings_verify">Check hashes</string>
+    <string name="settings_verify_desc">Catches a corrupt CIA.</string>
+    <string name="settings_overwrite">Overwrite saves</string>
+    <string name="settings_overwrite_desc">Off keeps the card save.</string>
+    <string name="settings_finalize">Copy finalizer</string>
+    <string name="settings_finalize_desc">3dsx in /3ds, cia in /cias.</string>
+    <string name="settings_finalizer_title">Install on HOME</string>
+    <string name="settings_finalizer_title_desc">Adds it as a title.</string>
     <string name="settings_keys">Keys</string>
     <string name="settings_clear_keys">Forget keys</string>
     <string name="settings_updates">Updates</string>

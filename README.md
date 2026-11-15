@@ -55,7 +55,7 @@ The finalizer lives in `3ds/` and is copied to the card by the app.
 
 Download the APK from
 [Releases](https://github.com/eduhbarb/DreamInstall/releases/latest) and install it on the phone.
-The current file is `DreamInstall-1.4.0.apk`.
+The current file is `DreamInstall-1.4.1.apk`.
 
 - Android 11 or newer, arm64.
 - The APK is signed with a development key, so it does not come from the Play Store.

@@ -17,34 +17,46 @@ data class Palette(
     val border: Int,
     val text: Int,
     val dim: Int,
+    val ok: Int,
+    val okBg: Int,
+    val warn: Int,
+    val warnBg: Int,
+    val bad: Int,
+    val badBg: Int,
 )
 
-const val DEFAULT_ACCENT = 0xFFA855F7.toInt()
+const val DEFAULT_ACCENT = 0xFF9C7CC4.toInt()
 
 val ACCENTS: List<Pair<String, Int>> = listOf(
     "Purple" to DEFAULT_ACCENT,
-    "Indigo" to 0xFF5865F2.toInt(),
-    "Blue" to 0xFF3D8BFD.toInt(),
-    "Teal" to 0xFF20908A.toInt(),
-    "Green" to 0xFF2B9349.toInt(),
-    "Amber" to 0xFFB6721C.toInt(),
-    "Orange" to 0xFFCE622D.toInt(),
-    "Pink" to 0xFFCD53A6.toInt(),
+    "Indigo" to 0xFF6B6FA8.toInt(),
+    "Blue" to 0xFF5B7FA8.toInt(),
+    "Teal" to 0xFF4F8A87.toInt(),
+    "Green" to 0xFF5C8A63.toInt(),
+    "Amber" to 0xFFA07A45.toInt(),
+    "Orange" to 0xFFA86445.toInt(),
+    "Pink" to 0xFFA05C87.toInt(),
 )
 
 val DREAM = Palette(
     accent = DEFAULT_ACCENT,
-    onAccent = 0xFF14061F.toInt(),
-    highlight = 0xFFCBB0F5.toInt(),
-    soft = 0xFFE6DCF5.toInt(),
-    bg = 0xFF08060D.toInt(),
-    blob = 0xFF160D24.toInt(),
-    card = 0xFF150E21.toInt(),
-    track = 0xFF1E1530.toInt(),
-    selected = 0xFF2C1A45.toInt(),
-    border = 0xFF2E2342.toInt(),
-    text = 0xFFF4EEFC.toInt(),
-    dim = 0xFF9E93B0.toInt(),
+    onAccent = 0xFF17111F.toInt(),
+    highlight = 0xFFCDB9E4.toInt(),
+    soft = 0xFFE7DFF0.toInt(),
+    bg = 0xFF100D14.toInt(),
+    blob = 0xFF191420.toInt(),
+    card = 0xFF171320.toInt(),
+    track = 0xFF211B29.toInt(),
+    selected = 0xFF342A41.toInt(),
+    border = 0xFF2B2433.toInt(),
+    text = 0xFFF2EDF7.toInt(),
+    dim = 0xFFA79DB2.toInt(),
+    ok = 0xFF9CC7AC.toInt(),
+    okBg = 0xFF18251F.toInt(),
+    warn = 0xFFD8B071.toInt(),
+    warnBg = 0xFF261F17.toInt(),
+    bad = 0xFFD98C84.toInt(),
+    badBg = 0xFF2A1817.toInt(),
 )
 
 private data class Hsl(val h: Double, val s: Double, val l: Double)
@@ -121,5 +133,11 @@ fun paletteFor(accent: Int): Palette {
         border = follow(base.border),
         text = follow(base.text),
         dim = follow(base.dim),
+        ok = base.ok,
+        okBg = base.okBg,
+        warn = base.warn,
+        warnBg = base.warnBg,
+        bad = base.bad,
+        badBg = base.badBg,
     )
 }
