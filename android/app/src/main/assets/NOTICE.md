@@ -1,6 +1,6 @@
 # Third-party notices
 
-DreamInstaller ports the install pipeline of **custom-install** by Ian Burgwin (MIT).
+DreamInstall ports the install pipeline of **custom-install** by Ian Burgwin (MIT).
 Full text: `app/src/main/assets/licenses/custom-install-LICENSE.md`.
 
 The bundled **DreamInstallFinalize** homebrew is based on

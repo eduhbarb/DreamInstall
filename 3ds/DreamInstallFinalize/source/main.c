@@ -456,7 +456,7 @@ static void draw_bottom(int mode) {
 		note = "cifinish.bin foi removido. Pode voltar ao menu.";
 	}
 	draw_text(g_text_buf, note, 16, 158, 0.40f, COLOR_DIM);
-	draw_text(g_text_buf, "github.com/eduhbarb/DreamInstaller", 16, 206, 0.34f, COLOR_DIM);
+	draw_text(g_text_buf, "github.com/eduhbarb/DreamInstall", 16, 206, 0.34f, COLOR_DIM);
 }
 
 int main(int argc, char *argv[]) {

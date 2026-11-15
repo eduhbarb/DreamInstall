@@ -1,4 +1,4 @@
-# DreamInstaller
+# DreamInstall
 
 Instalador de títulos do Nintendo 3DS para Android. Grava os jogos direto no cartão SD, sem
 rede, do mesmo jeito que o [custom-install](https://github.com/ihaveamac/custom-install) faz
@@ -16,7 +16,7 @@ Python continua na raiz e a versão Android fica em [`android/`](android/). O RE
 está preservado em [docs/custom-install-README.md](docs/custom-install-README.md).
 
 ```
-android/        app Android (Kotlin + Compose) — o DreamInstaller
+android/        app Android (Kotlin + Compose) — o DreamInstall
 3ds/            finalizador DreamInstallFinalize (C, libctru + citro2d)
 custominstall/  ferramenta original em Python, para PC
 finalize/       homebrew original que instala ticket e seed no 3DS
@@ -53,8 +53,8 @@ O finalizador próprio fica em `3ds/` e é copiado para o cartão pelo app.
 ### 1. Instalar o app
 
 Baixe o APK em
-[Releases](https://github.com/eduhbarb/DreamInstaller/releases/latest) e instale no celular.
-O arquivo da versão atual é `DreamInstaller-1.2.3.apk`.
+[Releases](https://github.com/eduhbarb/DreamInstall/releases/latest) e instale no celular.
+O arquivo da versão atual é `DreamInstall-1.3.0.apk`.
 
 - Android 11 ou mais novo, arm64.
 - O APK é assinado com uma chave de desenvolvimento, então não vem da Play Store.
@@ -275,7 +275,7 @@ O script compila com `--no-default-features` (sem FUSE) e copia o resultado para
 ### Estrutura
 
 ```
-android/app/src/main/java/dev/oni/dreaminstaller/
+android/app/src/main/java/dev/oni/dreaminstall/
 ├── AppViewModel.kt         estado da UI, fila, chaves, volumes
 ├── MainActivity.kt         entrada Compose
 ├── core/

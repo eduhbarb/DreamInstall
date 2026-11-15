@@ -1,4 +1,4 @@
-# DreamInstaller 1.0.0
+# DreamInstall 1.0.0
 
 Primeira versão do instalador de títulos do 3DS para Android.
 

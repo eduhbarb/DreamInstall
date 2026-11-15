@@ -7,15 +7,15 @@ plugins {
 }
 
 android {
-    namespace = "dev.oni.dreaminstaller"
+    namespace = "dev.oni.dreaminstall"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "dev.oni.dreaminstaller"
+        applicationId = "dev.oni.dreaminstall"
         minSdk = 30
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.2.3"
+        versionCode = 8
+        versionName = "1.3.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

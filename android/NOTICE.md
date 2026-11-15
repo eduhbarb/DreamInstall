@@ -1,6 +1,6 @@
 # Third-party notices
 
-DreamInstaller ports the install pipeline of **custom-install** by Ian Burgwin (MIT).
+DreamInstall ports the install pipeline of **custom-install** by Ian Burgwin (MIT).
 Full text: `app/src/main/assets/licenses/custom-install-LICENSE.md`.
 
 Title database access uses **save3ds** by Weiyi Wang, built without FUSE for arm64 Android

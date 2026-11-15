@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DreamInstaller</string>
+    <string name="app_name">DreamInstall</string>
     <string name="app_subtitle">3DS · 2DS · instalador de SD</string>
 
     <string name="tab_install">Instalar</string>
@@ -24,7 +24,7 @@
     <string name="sd_change">Trocar</string>
     <string name="sd_not_ready">Este cartão não tem a pasta Nintendo 3DS do seu console.</string>
     <string name="grant_title">Acesso a todos os arquivos</string>
-    <string name="grant_text">O DreamInstaller grava dentro do cartão SD, então o Android precisa liberar as pastas reais.</string>
+    <string name="grant_text">O DreamInstall grava dentro do cartão SD, então o Android precisa liberar as pastas reais.</string>
     <string name="grant_button">Abrir ajustes</string>
 
     <string name="queue_title">Fila</string>
@@ -92,7 +92,7 @@
     <string name="settings_licenses">Licenças</string>
     <string name="settings_version">Versão %1$s</string>
     <string name="about_text">Instala títulos direto no cartão SD do 3DS, como o custom-install faz no PC. Títulos, seeds e chaves ficam no seu celular e no cartão. Sem permissão de internet.</string>
-    <string name="licenses_text">DreamInstaller é licenciado sob MIT.\n\ncustom-install, o fluxo que este app porta, é MIT, copyright Ian Burgwin.\n\nsave3ds, usado para editar o banco de títulos, é MIT ou Apache-2.0, copyright Weiyi Wang.\n\npyctr, usado como referência de crypto e formatos, é MIT, copyright Ian Burgwin.\n\nFredoka e Hanken Grotesk estão sob a SIL Open Font License 1.1.</string>
+    <string name="licenses_text">DreamInstall é licenciado sob MIT.\n\ncustom-install, o fluxo que este app porta, é MIT, copyright Ian Burgwin.\n\nsave3ds, usado para editar o banco de títulos, é MIT ou Apache-2.0, copyright Weiyi Wang.\n\npyctr, usado como referência de crypto e formatos, é MIT, copyright Ian Burgwin.\n\nFredoka e Hanken Grotesk estão sob a SIL Open Font License 1.1.</string>
 
     <string name="accent_purple">Roxo</string>
     <string name="accent_indigo">Índigo</string>
@@ -109,7 +109,7 @@
     <string name="done">Concluir</string>
     <string name="notifications_denied">Notificações desligadas, o progresso fica só no app.</string>
     <string name="notification_channel">Progresso da instalação</string>
-    <string name="notification_title">DreamInstaller</string>
+    <string name="notification_title">DreamInstall</string>
     <string name="notification_text">Instalando %1$d de %2$d</string>
     <string name="notification_done">Instalação concluída</string>
     <string name="crash_title">Algo deu errado</string>

@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "DreamInstaller"
+rootProject.name = "DreamInstall"
 include(":app")

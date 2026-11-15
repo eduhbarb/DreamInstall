@@ -1,6 +1,6 @@
 # DreamInstallFinalize
 
-Finalizador para o DreamInstaller. Roda no 3DS, instala o ticket e a seed dos títulos que o
+Finalizador para o DreamInstall. Roda no 3DS, instala o ticket e a seed dos títulos que o
 app Android gravou no cartão e mostra o resultado na tela.
 
 Baseado no [custom-install-finalize](https://github.com/ihaveamac/custom-install/tree/python-package/finalize)
@@ -39,7 +39,7 @@ DreamInstallFinalize.3dsx   roda pelo Homebrew Launcher
 DreamInstallFinalize.cia    instala pelo FBI se quiser ícone na HOME Menu
 ```
 
-O DreamInstaller copia os dois para `/3ds` e `/cias` no cartão quando faltam ou estão
+O DreamInstall copia os dois para `/3ds` e `/cias` no cartão quando faltam ou estão
 desatualizados.
 
 ## Licença

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DreamInstaller</string>
+    <string name="app_name">DreamInstall</string>
     <string name="app_subtitle">3DS · 2DS · SD card installer</string>
 
     <string name="tab_install">Install</string>
@@ -24,7 +24,7 @@
     <string name="sd_change">Change</string>
     <string name="sd_not_ready">This card has no Nintendo 3DS folder for your console.</string>
     <string name="grant_title">All files access</string>
-    <string name="grant_text">DreamInstaller writes inside the SD card, so Android has to let it see real folders.</string>
+    <string name="grant_text">DreamInstall writes inside the SD card, so Android has to let it see real folders.</string>
     <string name="grant_button">Open settings</string>
 
     <string name="queue_title">Queue</string>
@@ -92,7 +92,7 @@
     <string name="settings_licenses">Licenses</string>
     <string name="settings_version">Version %1$s</string>
     <string name="about_text">Installs titles straight to the 3DS SD card, the way custom-install does on a PC. Titles, seeds and keys stay on your phone and card. No network permission.</string>
-    <string name="licenses_text">DreamInstaller is MIT licensed.\n\ncustom-install, the install pipeline this app ports, is MIT licensed, copyright Ian Burgwin.\n\nsave3ds, used to edit the title database, is MIT or Apache-2.0 licensed, copyright Weiyi Wang.\n\npyctr, used as the reference for the crypto and file formats, is MIT licensed, copyright Ian Burgwin.\n\nFredoka and Hanken Grotesk are under the SIL Open Font License 1.1.</string>
+    <string name="licenses_text">DreamInstall is MIT licensed.\n\ncustom-install, the install pipeline this app ports, is MIT licensed, copyright Ian Burgwin.\n\nsave3ds, used to edit the title database, is MIT or Apache-2.0 licensed, copyright Weiyi Wang.\n\npyctr, used as the reference for the crypto and file formats, is MIT licensed, copyright Ian Burgwin.\n\nFredoka and Hanken Grotesk are under the SIL Open Font License 1.1.</string>
 
     <string name="accent_purple">Purple</string>
     <string name="accent_indigo">Indigo</string>
@@ -109,7 +109,7 @@
     <string name="done">Done</string>
     <string name="notifications_denied">Notifications are off, so progress stays inside the app.</string>
     <string name="notification_channel">Install progress</string>
-    <string name="notification_title">DreamInstaller</string>
+    <string name="notification_title">DreamInstall</string>
     <string name="notification_text">Installing %1$d of %2$d</string>
     <string name="notification_done">Install finished</string>
     <string name="crash_title">Something went wrong</string>
