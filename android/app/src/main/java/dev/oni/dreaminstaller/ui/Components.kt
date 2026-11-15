@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.oni.dreaminstaller.core.decodeSmdhIcon
 import dev.oni.dreaminstaller.ui.theme.LocalPalette
 
 @Composable
@@ -154,15 +155,7 @@ fun Thumb(icon: ByteArray?, size: Dp = 46.dp) {
 }
 
 fun rgb565(data: ByteArray): ImageBitmap? {
-    if (data.size < 48 * 48 * 2) return null
-    val pixels = IntArray(48 * 48)
-    for (i in pixels.indices) {
-        val raw = (data[i * 2].toInt() and 0xFF) or ((data[i * 2 + 1].toInt() and 0xFF) shl 8)
-        val r = ((raw shr 11) and 0x1F) * 255 / 31
-        val g = ((raw shr 5) and 0x3F) * 255 / 63
-        val b = (raw and 0x1F) * 255 / 31
-        pixels[i] = (0xFF shl 24) or (r shl 16) or (g shl 8) or b
-    }
+    val pixels = decodeSmdhIcon(data, 48, 48) ?: return null
     return Bitmap.createBitmap(pixels, 48, 48, Bitmap.Config.ARGB_8888).asImageBitmap()
 }
 
