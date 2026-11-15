@@ -133,14 +133,19 @@ class Installer(
 
         val cifinish = File(layout.root, "cifinish.bin")
         if (installed) {
-            if (cifinish.isFile) {
-                val data = Cifinish.load(cifinish)
-                val id = java.lang.Long.parseUnsignedLong(titleId, 16)
-                if (!data.containsKey(id)) {
-                    data[id] = null
-                    Cifinish.save(cifinish, data)
-                    updateNameSidecar(titleId, FINALIZER_NAME)
-                }
+            // Keep an entry for the finalizer itself so a missing ticket (or a deleted
+            // cifinish.bin) is repaired on the next finalize run.
+            val data = try {
+                Cifinish.load(cifinish)
+            } catch (e: Exception) {
+                log("cifinish.bin inválido (${e.message}); recriando")
+                LinkedHashMap()
+            }
+            val id = java.lang.Long.parseUnsignedLong(titleId, 16)
+            if (!data.containsKey(id)) {
+                data[id] = null
+                Cifinish.save(cifinish, data)
+                updateNameSidecar(titleId, FINALIZER_NAME)
             }
             return false
         }

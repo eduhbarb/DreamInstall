@@ -54,7 +54,7 @@ O finalizador próprio fica em `3ds/` e é copiado para o cartão pelo app.
 
 Baixe o APK em
 [Releases](https://github.com/eduhbarb/DreamInstaller/releases/latest) e instale no celular.
-O arquivo da versão atual é `DreamInstaller-1.2.1.apk`.
+O arquivo da versão atual é `DreamInstaller-1.2.2.apk`.
 
 - Android 11 ou mais novo, arm64.
 - O APK é assinado com uma chave de desenvolvimento, então não vem da Play Store.
