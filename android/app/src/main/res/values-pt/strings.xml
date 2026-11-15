@@ -7,6 +7,7 @@
 
     <string name="keys_title">Chaves do console</string>
     <string name="keys_hint">Extraídas do seu próprio console. Nunca saem do celular.</string>
+    <string name="keys_tap_hint">Toque numa chave para adicionar ou trocar.</string>
     <string name="key_missing">faltando</string>
     <string name="key_ok">pronto</string>
     <string name="key_optional">opcional</string>
@@ -22,6 +23,8 @@
     <string name="sd_none">Nenhum cartão encontrado. Use um leitor ou o slot do celular.</string>
     <string name="sd_refresh">Atualizar</string>
     <string name="sd_change">Trocar</string>
+    <string name="sd_id0_ok">id0 ok</string>
+    <string name="sd_id0_missing">id0 ausente</string>
     <string name="sd_not_ready">Este cartão não tem a pasta Nintendo 3DS do seu console.</string>
     <string name="grant_title">Acesso a todos os arquivos</string>
     <string name="grant_text">O DreamInstall grava dentro do cartão SD, então o Android precisa liberar as pastas reais.</string>
@@ -75,6 +78,7 @@
     <string name="backup_done">Backup do banco salvo em %1$s</string>
 
     <string name="settings_title">Ajustes</string>
+    <string name="settings_language">Idioma</string>
     <string name="settings_look">Visual</string>
     <string name="settings_accent">Cor de destaque</string>
     <string name="settings_behaviour">Comportamento</string>
@@ -88,10 +92,24 @@
     <string name="settings_finalizer_title_desc">Adiciona o CIA como título se ele ainda não estiver instalado; o próximo finalize instala o ticket.</string>
     <string name="settings_keys">Chaves</string>
     <string name="settings_clear_keys">Esquecer chaves</string>
+    <string name="settings_updates">Atualizações</string>
+    <string name="settings_update_auto">Procurar ao abrir</string>
+    <string name="settings_update_auto_desc">Consulta o GitHub uma vez ao abrir o app.</string>
+    <string name="update_tag">Atualização</string>
+    <string name="update_available">Versão %1$s disponível</string>
+    <string name="update_current">Você tem a versão %1$s.</string>
+    <string name="update_download">Baixar</string>
+    <string name="update_later">Ignorar</string>
+    <string name="update_github">GitHub</string>
+    <string name="update_check_now">Verificar agora</string>
+    <string name="update_checking">Verificando…</string>
+    <string name="update_latest">DreamInstall %1$s é a versão mais recente.</string>
+    <string name="update_latest_short">v%1$s é a mais recente</string>
+    <string name="update_failed">Não foi possível consultar o GitHub: %1$s</string>
     <string name="settings_about">Sobre</string>
     <string name="settings_licenses">Licenças</string>
     <string name="settings_version">Versão %1$s</string>
-    <string name="about_text">Instala títulos direto no cartão SD do 3DS, como o custom-install faz no PC. Títulos, seeds e chaves ficam no seu celular e no cartão. Sem permissão de internet.</string>
+    <string name="about_text">Instala títulos direto no cartão SD do 3DS, como o custom-install faz no PC. Títulos, seeds e chaves ficam no seu celular e no cartão. O único uso de rede é a checagem opcional de releases no GitHub.</string>
     <string name="licenses_text">DreamInstall é licenciado sob MIT.\n\ncustom-install, o fluxo que este app porta, é MIT, copyright Ian Burgwin.\n\nsave3ds, usado para editar o banco de títulos, é MIT ou Apache-2.0, copyright Weiyi Wang.\n\npyctr, usado como referência de crypto e formatos, é MIT, copyright Ian Burgwin.\n\nFredoka e Hanken Grotesk estão sob a SIL Open Font License 1.1.</string>
 
     <string name="accent_purple">Roxo</string>

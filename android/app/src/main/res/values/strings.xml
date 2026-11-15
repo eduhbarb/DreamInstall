@@ -7,6 +7,7 @@
 
     <string name="keys_title">Console keys</string>
     <string name="keys_hint">Dumped from your own console. Never leaves the phone.</string>
+    <string name="keys_tap_hint">Tap a key to add or replace it.</string>
     <string name="key_missing">missing</string>
     <string name="key_ok">ready</string>
     <string name="key_optional">optional</string>
@@ -22,6 +23,8 @@
     <string name="sd_none">No card found. Insert it through a reader or the phone slot.</string>
     <string name="sd_refresh">Refresh</string>
     <string name="sd_change">Change</string>
+    <string name="sd_id0_ok">id0 ok</string>
+    <string name="sd_id0_missing">id0 missing</string>
     <string name="sd_not_ready">This card has no Nintendo 3DS folder for your console.</string>
     <string name="grant_title">All files access</string>
     <string name="grant_text">DreamInstall writes inside the SD card, so Android has to let it see real folders.</string>
@@ -75,6 +78,7 @@
     <string name="backup_done">Database backup saved in %1$s</string>
 
     <string name="settings_title">Settings</string>
+    <string name="settings_language">Language</string>
     <string name="settings_look">Look</string>
     <string name="settings_accent">Accent</string>
     <string name="settings_behaviour">Behaviour</string>
@@ -88,10 +92,24 @@
     <string name="settings_finalizer_title_desc">Adds its CIA as a title if it is not installed yet; the next finalize run installs the ticket.</string>
     <string name="settings_keys">Keys</string>
     <string name="settings_clear_keys">Forget keys</string>
+    <string name="settings_updates">Updates</string>
+    <string name="settings_update_auto">Check on open</string>
+    <string name="settings_update_auto_desc">Asks GitHub once each time the app opens.</string>
+    <string name="update_tag">Update</string>
+    <string name="update_available">Version %1$s available</string>
+    <string name="update_current">You have version %1$s.</string>
+    <string name="update_download">Download</string>
+    <string name="update_later">Ignore</string>
+    <string name="update_github">GitHub</string>
+    <string name="update_check_now">Check now</string>
+    <string name="update_checking">Checking…</string>
+    <string name="update_latest">DreamInstall %1$s is the latest version.</string>
+    <string name="update_latest_short">v%1$s is the latest</string>
+    <string name="update_failed">Could not check GitHub: %1$s</string>
     <string name="settings_about">About</string>
     <string name="settings_licenses">Licenses</string>
     <string name="settings_version">Version %1$s</string>
-    <string name="about_text">Installs titles straight to the 3DS SD card, the way custom-install does on a PC. Titles, seeds and keys stay on your phone and card. No network permission.</string>
+    <string name="about_text">Installs titles straight to the 3DS SD card, the way custom-install does on a PC. Titles, seeds and keys stay on your phone and card. The only network use is the optional GitHub release check.</string>
     <string name="licenses_text">DreamInstall is MIT licensed.\n\ncustom-install, the install pipeline this app ports, is MIT licensed, copyright Ian Burgwin.\n\nsave3ds, used to edit the title database, is MIT or Apache-2.0 licensed, copyright Weiyi Wang.\n\npyctr, used as the reference for the crypto and file formats, is MIT licensed, copyright Ian Burgwin.\n\nFredoka and Hanken Grotesk are under the SIL Open Font License 1.1.</string>
 
     <string name="accent_purple">Purple</string>

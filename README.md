@@ -1,248 +1,256 @@
 # DreamInstall
 
-Instalador de títulos do Nintendo 3DS para Android. Grava os jogos direto no cartão SD, sem
-rede, do mesmo jeito que o [custom-install](https://github.com/ihaveamac/custom-install) faz
-no PC.
+**English** | [Português](README.pt-BR.md)
 
-O app lê o `.cia`, escreve `.app`/`.tmd` no cartão, gera o `cmd`, atualiza o `title.db` com o
-`save3ds` e deixa o `cifinish.bin` para o último passo no console. Não é instalação por rede
-e não passa pelo FBI.
+Android installer for Nintendo 3DS titles. It writes games straight to the SD card, the same
+way [custom-install](https://github.com/ihaveamac/custom-install) does on a PC.
 
-## Sobre este fork
+The app reads the `.cia`, writes `.app`/`.tmd` to the card, builds the `cmd`, updates `title.db`
+with `save3ds`, and leaves a `cifinish.bin` for the last step on the console. It is not a network
+install, and it does not go through FBI.
 
-Este repositório é um fork de
-[ihaveamac/custom-install](https://github.com/ihaveamac/custom-install). O código original em
-Python continua na raiz e a versão Android fica em [`android/`](android/). O README original
-está preservado em [docs/custom-install-README.md](docs/custom-install-README.md).
+## About this fork
+
+This repository is a fork of
+[ihaveamac/custom-install](https://github.com/ihaveamac/custom-install). The original Python code
+stays at the root and the Android version lives in [`android/`](android/). The original README is
+kept at [docs/custom-install-README.md](docs/custom-install-README.md).
 
 ```
-android/        app Android (Kotlin + Compose) — o DreamInstall
-3ds/            finalizador DreamInstallFinalize (C, libctru + citro2d)
-custominstall/  ferramenta original em Python, para PC
-finalize/       homebrew original que instala ticket e seed no 3DS
-extras/         scripts auxiliares do upstream
-docs/           README original do custom-install
+android/        Android app (Kotlin + Compose) — DreamInstall
+3ds/            DreamInstallFinalize finalizer (C, libctru + citro2d)
+custominstall/  original Python tool, for PC
+finalize/       original homebrew that installs the ticket and seed on the 3DS
+extras/         upstream helper scripts
+docs/           original custom-install README
 ```
 
-O finalizador próprio fica em `3ds/` e é copiado para o cartão pelo app.
+The finalizer lives in `3ds/` and is copied to the card by the app.
 
-| Tela principal | Ajustes |
+| Home | Settings |
 | --- | --- |
-| ![Tela principal](android/docs/main.png) | ![Ajustes](android/docs/settings.png) |
+| ![Home](android/docs/main.png) | ![Settings](android/docs/settings.png) |
 
-## Sumário
+## Contents
 
-- [Como usar](#como-usar)
-  - [1. Instalar o app](#1-instalar-o-app)
-  - [2. Preparar as chaves](#2-preparar-as-chaves)
-  - [3. Conectar o cartão SD](#3-conectar-o-cartão-sd)
-  - [4. Instalar os títulos](#4-instalar-os-títulos)
-  - [5. Finalizar no 3DS](#5-finalizar-no-3ds)
-- [Ajustes do app](#ajustes-do-app)
-- [Solução de problemas](#solução-de-problemas)
-- [Limites](#limites)
-- [Buildar do zero](#buildar-do-zero)
-- [Como funciona](#como-funciona)
-- [Testes](#testes)
-- [Privacidade e legalidade](#privacidade-e-legalidade)
-- [Créditos e licenças](#créditos-e-licenças)
+- [How to use](#how-to-use)
+  - [1. Install the app](#1-install-the-app)
+  - [2. Prepare the keys](#2-prepare-the-keys)
+  - [3. Connect the SD card](#3-connect-the-sd-card)
+  - [4. Install the titles](#4-install-the-titles)
+  - [5. Finish on the 3DS](#5-finish-on-the-3ds)
+- [App settings](#app-settings)
+- [Troubleshooting](#troubleshooting)
+- [Limits](#limits)
+- [Building from scratch](#building-from-scratch)
+- [How it works](#how-it-works)
+- [Tests](#tests)
+- [Privacy and legality](#privacy-and-legality)
+- [Credits and licenses](#credits-and-licenses)
 - [Roadmap](#roadmap)
 
-## Como usar
+## How to use
 
-### 1. Instalar o app
+### 1. Install the app
 
-Baixe o APK em
-[Releases](https://github.com/eduhbarb/DreamInstall/releases/latest) e instale no celular.
-O arquivo da versão atual é `DreamInstall-1.3.0.apk`.
+Download the APK from
+[Releases](https://github.com/eduhbarb/DreamInstall/releases/latest) and install it on the phone.
+The current file is `DreamInstall-1.4.0.apk`.
 
-- Android 11 ou mais novo, arm64.
-- O APK é assinado com uma chave de desenvolvimento, então não vem da Play Store.
-- Em MIUI/HyperOS, libere **Instalar via USB** ou abra o APK pelo gerenciador de arquivos.
-  Se o sistema bloquear a instalação por USB, copie o APK para o celular e toque nele.
+- Android 11 or newer, arm64.
+- The APK is signed with a development key, so it does not come from the Play Store.
+- On MIUI/HyperOS, allow **Install via USB** or open the APK from the file manager. If the system
+  blocks a USB install, copy the APK to the phone and tap it there.
 
-Na primeira abertura, o app pede **Acesso a todos os arquivos**. Isso é necessário porque ele
-grava em caminhos reais do cartão (`/storage/XXXX-XXXX`). Sem essa permissão o cartão não
-aparece. O app não pede internet e não tem permissão de rede.
+On the first launch the app asks for **All files access**. It needs that to write to real card
+paths (`/storage/XXXX-XXXX`). Without it the card does not show up. The app only uses the network
+to check GitHub for new releases; see [Privacy](#privacy-and-legality).
 
-### 2. Preparar as chaves
+### 2. Prepare the keys
 
-Você precisa de três arquivos extraídos do **seu próprio console**:
+You need three files dumped from **your own console**:
 
-| Arquivo | Obrigatório | Tamanho | Para que serve |
+| File | Required | Size | What it is for |
 | --- | --- | --- | --- |
-| `boot9.bin` | sim | **64 KiB** (0x10000) | deriva as chaves de crypto |
-| `movable.sed` | sim | 0x120 | deriva a chave SD e o `id0` do console |
-| `seeddb.bin` | recomendado | variável | seeds dos jogos de 2015 em diante |
+| `boot9.bin` | yes | **64 KiB** (0x10000) | derives the crypto keys |
+| `movable.sed` | yes | 0x120 | derives the SD key and the console `id0` |
+| `seeddb.bin` | recommended | varies | seeds for games from 2015 on |
 
-Como extrair: use o GodMode9 no 3DS. O `boot9.bin` precisa ser o dump completo de 64 KiB; um
-`boot9_prot.bin` de 32 KiB não funciona. O `seeddb.bin` pode ser obtido com o
-[seedconv](https://github.com/ihaveamac/3DS-rom-tools/wiki/SeedDB-list) ou com o próprio
-GodMode9, dependendo do método que você já usa.
+How to dump them: use GodMode9 on the 3DS. `boot9.bin` must be the full 64 KiB dump; a 32 KiB
+`boot9_prot.bin` does not work. `seeddb.bin` can come from
+[seedconv](https://github.com/ihaveamac/3DS-rom-tools/wiki/SeedDB-list) or from GodMode9,
+depending on the method you already use.
 
-No app, toque em **Adicionar** ao lado de cada arquivo. As chaves são copiadas para o
-armazenamento privado do app e nunca saem do aparelho. O botão **Esquecer chaves** em Ajustes
-apaga tudo.
+In the app, tap **Add** next to each file. The keys are copied to the app's private storage and
+never leave the device. **Forget keys** in Settings deletes them.
 
-Assim que você escolhe o cartão SD, o app procura as chaves sozinho, nos mesmos lugares do
-GUI do custom-install no PC:
+As soon as you pick the SD card, the app looks for the keys on its own, in the same places as the
+custom-install PC GUI:
 
 ```
 SD/gm9/out/boot9.bin
 SD/gm9/out/movable.sed
 SD/gm9/out/seeddb.bin
-SD/boot9strap/<arquivo>
-SD/<arquivo>
+SD/boot9strap/<file>
+SD/<file>
 ```
 
-O que faltar é copiado e carregado automaticamente. Se você já tem chaves no app, elas não são
-substituídas; use **Buscar no cartão** no card **Chaves do console** para forçar a troca pelas
-do cartão. A busca também aceita maiúsculas/minúsculas diferentes nos nomes.
+Whatever is missing is copied and loaded automatically. If you already have keys in the app, they
+are not replaced; use **Scan card** in the **Console keys** card to force the card copies. The
+scan also accepts different upper/lower case in the file names.
 
-O app não inclui chaves, tickets nem jogos. Use apenas `.cia` que você tem o direito de usar.
+The app does not include keys, tickets or games. Use only `.cia` files you have the right to use.
 
-### 3. Conectar o cartão SD
+### 3. Connect the SD card
 
-Use um leitor USB-C/OTG. O slot do celular normalmente aceita só microSD de armazenamento, não
-o cartão do 3DS.
+Use a USB-C/OTG reader. The phone slot usually takes only a storage microSD, not the 3DS card.
 
-1. Desligue o 3DS e tire o cartão.
-2. Conecte o cartão no celular.
-3. No app, toque em **Trocar** na seção **Cartão SD** e escolha o volume. Ao selecionar, o app
-   já procura `boot9.bin`, `movable.sed` e `seeddb.bin` no cartão.
-4. O app valida se existe `Nintendo 3DS/<id0>` correspondente ao seu `movable.sed`.
+1. Turn the 3DS off and take the card out.
+2. Connect the card to the phone.
+3. The app selects the card automatically: it looks for a removable volume with a `Nintendo 3DS`
+   folder and prefers the one that matches the `id0` from your `movable.sed`. Internal storage is
+   never picked automatically.
+4. To use another volume, tap **Change** in the **SD card** card and pick one; the choice is kept
+   while that volume is mounted.
+5. On selection the app already looks for `boot9.bin`, `movable.sed` and `seeddb.bin` on the card.
 
-Se aparecer **id0 não encontrado**, o cartão não foi usado nesse console ou o `movable.sed` é
-de outro aparelho. Coloque o cartão no 3DS uma vez, ligue e desligue, e tente de novo.
+If **id0 missing** appears, the card was not used on this console or the `movable.sed` is from
+another device. Put the card in the 3DS once, turn it on and off, and try again.
 
-### 4. Instalar os títulos
+### 4. Install the titles
 
-1. Toque em **Adicionar CIAs** e escolha um ou vários arquivos.
-2. Confira nome, ícone, título, versão e tamanho na fila.
-3. Toque em **Instalar**.
+1. Tap **Add CIAs** and pick one or more files.
+2. Check name, icon, title, version and size in the queue.
+3. Tap **Install**.
 
-A gravação roda em um serviço em primeiro plano, com notificação, progresso por título,
-velocidade e tempo restante. Você pode sair do app; a notificação continua. O cartão não deve
-ser removido durante a instalação.
+Writing runs in a foreground service with a notification, per-title progress, speed and time left.
+You can leave the app; the notification stays. Do not remove the card during an install.
 
-O que o app faz:
+What the app does:
 
-- Confere o SHA-256 de cada conteúdo (se a opção estiver ligada).
-- Grava em uma pasta temporária no próprio cartão e só então renomeia para
-  `title/<high>/<low>`.
-- Faz backup de `title.db` e `import.db` em `/ci-backup/<data-hora>/` antes de mexer.
-- Importa o `title.db` a cada título, para que uma interrupção não perca os anteriores.
-- Copia `DreamInstallFinalize.3dsx` para `/3ds` e `DreamInstallFinalize.cia` para `/cias`
-  quando faltam ou estão desatualizados.
-- Avisa se o cartão chegou perto do limite de 300 ícones da HOME Menu.
+- Checks the SHA-256 of every content (if the option is on).
+- Writes to a temporary folder on the card and only then renames to `title/<high>/<low>`.
+- Backs up `title.db` and `import.db` to `/ci-backup/<date-time>/` before touching them.
+- Imports `title.db` after each title, so an interruption does not lose the previous ones.
+- Copies `DreamInstallFinalize.3dsx` to `/3ds` and `DreamInstallFinalize.cia` to `/cias` when they
+  are missing or outdated.
+- Warns when the card gets close to the HOME Menu limit of 300 icons.
 
-Cancelar interrompe depois do título atual, sem corromper a fila.
+Cancel stops after the current title, without corrupting the queue.
 
-### 5. Finalizar no 3DS
+### 5. Finish on the 3DS
 
-1. Ejete o cartão do celular (ou desconecte o leitor com segurança).
-2. Coloque o cartão no 3DS.
-3. Abra o **Homebrew Launcher** e rode **DreamInstallFinalize**.
+1. Eject the card from the phone (or unplug the reader safely).
+2. Put the card in the 3DS.
+3. Open the **Homebrew Launcher** and run **DreamInstallFinalize**.
 
-O app deixa o finalizador no cartão automaticamente: `3dsx` em `/3ds` e `.cia` em `/cias`. Ele
-só reescreve o arquivo se estiver faltando ou diferente do build atual. Se o finalizador ainda
-não estiver instalado no console, o app também instala o CIA como título e coloca o ticket dele
-no próximo `cifinish.bin`; assim, depois da primeira execução do 3dsx, ele aparece na HOME Menu.
-Isso pode ser desligado em **Ajustes → Instalar DreamInstallFinalize na HOME**.
+The app leaves the finalizer on the card automatically: `3dsx` in `/3ds` and `.cia` in `/cias`. It
+only rewrites a file when it is missing or different from the current build. If the finalizer is
+not installed on the console yet, the app also installs its CIA as a title and puts its ticket in
+the next `cifinish.bin`; after the first 3dsx run it shows up on the HOME Menu. This can be turned
+off in **Settings → Install DreamInstallFinalize on the HOME Menu**.
 
-O DreamInstallFinalize faz o mesmo trabalho do `custom-install-finalize`: instala o ticket e a
-seed no console. No fim, ele mostra uma tela com os títulos finalizados, os que já estavam e os
-que falharam, e pede **START** para voltar ao menu. Ele não lista a si mesmo, só os jogos.
+DreamInstallFinalize does the same job as `custom-install-finalize`: installs the ticket and the
+seed on the console. At the end it shows the finalized titles, the ones that were already there and
+the ones that failed, and asks for **START** to return to the menu. It does not list itself, only
+the games.
 
-Se preferir instalar o CIA na mão, ele também está em `/cias/DreamInstallFinalize.cia`; o 3dsx
-continua sendo a forma mais simples de rodar.
+If you prefer to install the CIA by hand, it is also at `/cias/DreamInstallFinalize.cia`; the 3dsx
+is still the simplest way to run it.
 
-O ticket mora no `ticket.db` do NAND. Nenhum app Android consegue gravá-lo, então esse passo
-no 3DS continua obrigatório.
+The ticket lives in the NAND `ticket.db`. No Android app can write it, so this step on the 3DS
+stays mandatory.
 
-## Ajustes do app
+## App settings
 
-- **Cor de destaque**: oito cores; o tema inteiro é recalculado a partir da cor escolhida,
-  igual ao DreamFTP.
-- **Conferir hash dos conteúdos**: ligado por padrão. Detecta CIA corrompido antes de gravar.
-- **Sobrescrever saves existentes**: desligado por padrão, mantém o save que já está no cartão.
-- **Copiar DreamInstallFinalize automaticamente**: ligado por padrão; mantém o 3dsx e o cia
-  no cartão.
-- **Instalar DreamInstallFinalize na HOME**: ligado por padrão; instala o CIA como título se
-  ele ainda não estiver no `title.db`. O ticket entra no próximo finalize.
-- **Esquecer chaves**: apaga `boot9.bin`, `movable.sed` e `seeddb.bin` do app.
+- **Language**: PT/EN. On the first launch any Portuguese phone locale keeps Portuguese, anything
+  else uses English. The choice is saved and can be changed at any time.
+- **Accent**: eight colours; the whole theme is recalculated from the chosen colour, like DreamFTP.
+- **Check content hashes**: on by default. Catches a corrupt CIA before it reaches the card.
+- **Overwrite existing saves**: off by default; keeps the save already on the card.
+- **Copy DreamInstallFinalize automatically**: on by default; keeps the 3dsx and the cia on the
+  card.
+- **Install DreamInstallFinalize on the HOME Menu**: on by default; installs the CIA as a title if
+  it is not in `title.db` yet. The ticket goes in on the next finalize.
+- **Check on open**: on by default; asks GitHub once each time the app opens. Turn it off to check
+  only when you press **Check now**.
+- **Forget keys**: deletes `boot9.bin`, `movable.sed` and `seeddb.bin` from the app.
 
-## Solução de problemas
+When a newer release exists, the app offers **Download**, **Ignore** (skips that version in the
+automatic check) and **GitHub**.
 
-| Sintoma | Causa provável | O que fazer |
+## Troubleshooting
+
+| Symptom | Likely cause | What to do |
 | --- | --- | --- |
-| Cartão não aparece | permissão de arquivos negada | conceda Acesso a todos os arquivos |
-| `id0 ... não existe` | cartão de outro console ou `movable.sed` errado | use o cartão no console uma vez e confira a chave |
-| `boot9.bin precisa ter 0x10000 bytes` | dump parcial de 32 KiB | use o dump completo de 64 KiB |
-| `seed ausente` | jogo de 2015+ sem `seeddb.bin` | adicione o `seeddb.bin` e reinstale |
-| `hash não confere` | CIA corrompido | baixe/copie o arquivo de novo |
-| Instalação para no meio | app fechado pelo sistema | a instalação roda em primeiro plano; mantenha a notificação ativa |
-| Jogo instalado mas continua como presente | ticket não instalado | rode `DreamInstallFinalize` no 3DS |
-| Jogo não aparece | HOME Menu cheia ou ticket ausente | rode o finalize; apague títulos para ficar abaixo de 300 |
-| DreamInstallFinalize não aparece na HOME | ticket ainda não instalado | rode o 3dsx uma vez; o app já deixou o título no cartão |
-| CIFINISH inválido ou cifinish.bin zerado | gravação antiga perdeu o conteúdo | use o app 1.2.1 ou mais novo e rode a instalação de novo |
-| `title.db corrompido` | problema no cartão ou interrupção | restaure `/ci-backup/<data>/title.db` e apague `cifinish.bin` |
-| Instalação cancelada pelo sistema no MIUI | restrição de instalação | abra o APK pelo gerenciador ou libere Instalar via USB |
+| Card does not appear | file permission denied | grant All files access |
+| `id0 ... does not exist` | card from another console or wrong `movable.sed` | use the card on the console once and check the key |
+| `boot9.bin must be 0x10000 bytes` | partial 32 KiB dump | use the full 64 KiB dump |
+| `seed missing` | 2015+ game without `seeddb.bin` | add `seeddb.bin` and install again |
+| `hash mismatch` | corrupt CIA | download/copy the file again |
+| Install stops halfway | app killed by the system | the install runs in the foreground; keep the notification alive |
+| Game installed but still a gift | ticket not installed | run `DreamInstallFinalize` on the 3DS |
+| Game does not show up | HOME Menu full or ticket missing | run the finalizer; delete titles to stay under 300 |
+| DreamInstallFinalize is not on the HOME Menu | ticket not installed yet | run the 3dsx once; the app already put the title on the card |
+| Invalid CIFINISH or zeroed cifinish.bin | an old write lost the content | use app 1.2.1 or newer and install again |
+| `title.db corrupted` | card problem or interruption | restore `/ci-backup/<date>/title.db` and delete `cifinish.bin` |
+| System cancels the install on MIUI | install restriction | open the APK from the file manager or allow Install via USB |
+| Update check fails | no network or GitHub down | ignore it; the app works offline |
 
-## Limites
+## Limits
 
-- Só `arm64-v8a`.
+- `arm64-v8a` only.
 - Android 11+.
-- Sideload: usa `MANAGE_EXTERNAL_STORAGE`, então não é publicável na Play Store.
-- DSiWare (`00048*`) não é suportado, igual ao custom-install.
-- Títulos exclusivos de New 3DS com crypto extra (slots 0x18/0x1B) podem não mostrar nome ou
-  ícone; a instalação em si não depende disso.
-- O app não baixa nada e não tem permissão de internet.
+- Sideload: uses `MANAGE_EXTERNAL_STORAGE`, so it cannot be published on the Play Store.
+- DSiWare (`00048*`) is not supported, same as custom-install.
+- New 3DS-only titles with extra crypto (slots 0x18/0x1B) may lack a name or icon; the install
+  itself does not depend on it.
+- The app never downloads games or keys. Its only network use is the GitHub release check.
 
-## Buildar do zero
+## Building from scratch
 
-### Requisitos
+### Requirements
 
 - JDK 17
 - Android SDK 36 (platform + build-tools)
-- Gradle 8.13 ou o wrapper incluído
-- Rust com target `aarch64-linux-android` e Android NDK **apenas** para recompilar o binário
-  nativo (o `.so` já está no repositório)
+- Gradle 8.13 or the included wrapper
+- Rust with the `aarch64-linux-android` target and the Android NDK **only** to rebuild the native
+  binary (the `.so` is already in the repository)
 
 ### Android Studio
 
-1. Abra a pasta do projeto.
-2. Deixe o Android Studio baixar o Gradle e o SDK.
-3. Rode a configuração `app`.
+1. Open the project folder.
+2. Let Android Studio download Gradle and the SDK.
+3. Run the `app` configuration.
 
-### Linha de comando
+### Command line
 
 ```powershell
-$env:JAVA_HOME = "C:\caminho\para\jdk-17"
+$env:JAVA_HOME = "C:\path\to\jdk-17"
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 
 cd android
 .\gradlew.bat :app:assembleDebug
 ```
 
-O APK sai em `android/app/build/outputs/apk/debug/app-debug.apk`.
+The APK lands in `android/app/build/outputs/apk/debug/app-debug.apk`.
 
-Build de release (assinado com a chave de debug local, só para sideload):
+Release build (signed with the local debug key, for sideload only):
 
 ```powershell
 cd android
 .\gradlew.bat :app:assembleRelease
 ```
 
-O APK sai em `android/app/build/outputs/apk/release/app-release.apk`.
+The APK lands in `android/app/build/outputs/apk/release/app-release.apk`.
 
-Para assinar com a sua chave, troque `signingConfigs.getByName("debug")` em
-`android/app/build.gradle.kts` por uma configuração própria.
+To sign with your own key, replace `signingConfigs.getByName("debug")` in
+`android/app/build.gradle.kts` with your own configuration.
 
-### Recompilar o finalizador 3DS
+### Rebuilding the 3DS finalizer
 
-O fonte fica em `3ds/DreamInstallFinalize` (C, libctru + citro2d). Precisa de devkitPro com
-`3ds-dev`, makerom e bannertool.
+The source is in `3ds/DreamInstallFinalize` (C, libctru + citro2d). It needs devkitPro with
+`3ds-dev`, makerom and bannertool.
 
 ```sh
 cd 3ds/DreamInstallFinalize
@@ -252,12 +260,12 @@ makerom -f cia -o DreamInstallFinalize.cia -target t -elf DreamInstallFinalize.e
   -rsf meta/DreamInstallFinalize.rsf -icon DreamInstallFinalize.smdh -banner banner.bin -exefslogo
 ```
 
-O workflow `.github/workflows/3ds.yml` faz esse build no container `devkitpro/devkitarm` e
-publica `DreamInstallFinalize.3dsx` e `DreamInstallFinalize.cia` como artifacts.
+The `.github/workflows/3ds.yml` workflow builds it in the `devkitpro/devkitarm` container and
+publishes `DreamInstallFinalize.3dsx` and `DreamInstallFinalize.cia` as artifacts.
 
-### Recompilar o `save3ds`
+### Rebuilding `save3ds`
 
-O binário usado para editar o `title.db` é o `save3ds` sem FUSE, compilado para Android.
+The binary used to edit `title.db` is `save3ds` without FUSE, compiled for Android.
 
 ```powershell
 git clone https://github.com/wwylele/save3ds.git C:\src\save3ds
@@ -269,96 +277,95 @@ cd android
 .\native\build-save3ds.ps1 -Source "C:\src\save3ds" -Ndk "C:\Android\Sdk\ndk\28.2.13676358"
 ```
 
-O script compila com `--no-default-features` (sem FUSE) e copia o resultado para
+The script builds with `--no-default-features` (no FUSE) and copies the result to
 `android/app/src/main/jniLibs/arm64-v8a/libsave3ds.so`.
 
-### Estrutura
+### Structure
 
 ```
 android/app/src/main/java/dev/oni/dreaminstall/
-├── AppViewModel.kt         estado da UI, fila, chaves, volumes
-├── MainActivity.kt         entrada Compose
+├── AppViewModel.kt         UI state, queue, keys, volumes, updates
+├── DreamInstallApp.kt      applies the saved language on start
+├── Language.kt             per-app locale, first-run detection
+├── MainActivity.kt         Compose entry point
 ├── core/
-│   ├── Crypto.kt           AES-ECB/CTR, CMAC, keygen, IV de caminho
+│   ├── Crypto.kt           AES-ECB/CTR, CMAC, keygen, path IV
 │   ├── Keys.kt             boot9/movable/seeddb, common key, id0
-│   ├── Cia.kt              parser de CIA/TMD/NCCH, metadados, ícone
-│   ├── Installer.kt        pipeline de gravação, cmd, title info, cifinish
-│   ├── Save3ds.kt          exec do binário nativo
-│   ├── Storage.kt          volumes, id0/id1, espaço, backup
-│   └── Queue.kt            fila persistida, estado da instalação
-├── service/InstallService.kt   primeiro plano, notificação, progresso
-└── ui/                     telas, componentes e tema
+│   ├── Cia.kt              CIA/TMD/NCCH parser, metadata, icon
+│   ├── Installer.kt        write pipeline, cmd, title info, cifinish
+│   ├── Save3ds.kt          native binary exec
+│   ├── Storage.kt          volumes, id0/id1, space, backup, card choice
+│   ├── Updates.kt          GitHub release check, version compare
+│   └── Queue.kt            persisted queue, install state
+├── service/InstallService.kt   foreground, notification, progress
+└── ui/                     screens, components and theme
 ```
 
-## Como funciona
+## How it works
 
-O fluxo é o mesmo do custom-install, com o trabalho de banco de dados delegado ao `save3ds`:
+The flow is the same as custom-install, with the database work delegated to `save3ds`:
 
-1. **Chaves**: `sd_key = keygen(KeyX[0x34], movable[0x110..0x120])` e
-   `id0 = SHA-256(keyY)` com as palavras de 32 bits invertidas. O keyblob do boot9 completo
-   fica em `0xD860`.
-2. **CIA**: o ticket decripta a titlekey; o TMD é validado (hash dos info records) e os
-   conteúdos ativos vêm do archive header (bits MSB-first).
-3. **Conteúdo**: cada seção é decriptada com AES-CBC e a titlekey, conferida com SHA-256 e
-   regravada com AES-CTR usando o IV do caminho (`SHA-256(path UTF-16LE + NUL)`, big-endian).
-4. **Metadados**: exheader, ExeFS e ícone passam por uma segunda camada de crypto NCCH
-   (KeyY da assinatura + KeyX do boot9, contador por partição/seção). O extdata id vem do
-   exheader.
-5. **cmd**: para cada conteúdo, CMAC sobre `SHA-256(header[0x100..0x200] + index + id)`.
-6. **Título**: os arquivos vão para `ci-install-temp-*` e são renomeados para
-   `title/<high>/<low>`; o `title.db` é extraído, a entrada de 0x80 bytes é escrita e o banco
-   é importado de volta.
-7. **cifinish**: registro v3 com título e seed, lido pelo `custom-install-finalize` no 3DS.
+1. **Keys**: `sd_key = keygen(KeyX[0x34], movable[0x110..0x120])` and `id0 = SHA-256(keyY)` with
+   the 32-bit words reversed. The full boot9 keyblob is at `0xD860`.
+2. **CIA**: the ticket decrypts the titlekey; the TMD is validated (info record hashes) and the
+   active contents come from the archive header (MSB-first bits).
+3. **Content**: each section is decrypted with AES-CBC and the titlekey, checked with SHA-256, and
+   rewritten with AES-CTR using the path IV (`SHA-256(path UTF-16LE + NUL)`, big-endian).
+4. **Metadata**: exheader, ExeFS and icon go through a second NCCH crypto layer (signature KeyY +
+   boot9 KeyX, per-partition/section counter). The extdata id comes from the exheader.
+5. **cmd**: for each content, CMAC over `SHA-256(header[0x100..0x200] + index + id)`.
+6. **Title**: files go to `ci-install-temp-*` and are renamed to `title/<high>/<low>`; `title.db`
+   is extracted, the 0x80-byte entry is written, and the database is imported back.
+7. **cifinish**: v3 record with title and seed, read by `custom-install-finalize` on the 3DS.
 
-## Testes
+## Tests
 
 ```powershell
 cd android
-.\gradlew.bat :app:testDebugUnitTest          # vetores + parser
-.\gradlew.bat :app:connectedDebugAndroidTest  # instala fixtures no aparelho
+.\gradlew.bat :app:testDebugUnitTest          # vectors, parser, versions, locale, card choice
+.\gradlew.bat :app:connectedDebugAndroidTest  # installs fixtures on the device
 ```
 
-- **Vetores dourados**: gerados com `pyctr`/`pycryptodomex` a partir de um boot9 sintético.
-  Cobrem keyblob, keygen, IV de caminho, CTR (inclusive em blocos quebrados), CMAC,
-  decriptação de titlekey, cifinish e o contador NCCH.
-- **Fixtures**: dois CIAs sintéticos (um com seed) com exheader/ExeFS criptografados.
-- **E2E**: o app instala os fixtures no aparelho. A árvore gerada é comparada com a saída do
-  custom-install no PC: arquivos, `title.db` e `cifinish.bin` batem byte a byte (o único campo
-  aleatório da entrada do banco é ignorado).
-- **Finalizador**: o workflow `3ds` compila o 3dsx e a CIA. O teste E2E do Android confere que
-  os dois arquivos chegam em `/3ds` e `/cias` e que `/dreamfinalize-names.txt` é escrito.
+- **Golden vectors**: generated with `pyctr`/`pycryptodomex` from a synthetic boot9. They cover
+  the keyblob, keygen, path IV, CTR (including broken blocks), CMAC, titlekey decryption, cifinish
+  and the NCCH counter.
+- **Fixtures**: two synthetic CIAs (one with a seed) with encrypted exheader/ExeFS.
+- **E2E**: the app installs the fixtures on the device. The generated tree is compared with the
+  custom-install PC output: files, `title.db` and `cifinish.bin` match byte for byte (the only
+  random field in the database entry is ignored).
+- **Formatter**: the `3ds` workflow builds the 3dsx and the CIA. The Android E2E test checks that
+  both files arrive in `/3ds` and `/cias` and that `/dreamfinalize-names.txt` is written.
 
-## Privacidade e legalidade
+## Privacy and legality
 
-- Tudo roda offline: o app não declara `INTERNET`.
-- Chaves e CIA ficam no aparelho; o app não envia nada.
-- Backup do banco fica no próprio cartão, em `/ci-backup`.
-- O app não distribui chaves, tickets, seeds ou jogos.
-- Use apenas conteúdo que você tem o direito de usar. Este projeto não é afiliado à Nintendo.
+- Keys and CIAs stay on the device; the app sends nothing about you.
+- The only network use is the optional GitHub release check (`api.github.com`, repository
+  `eduhbarb/DreamInstall`). It has no telemetry and no analytics.
+- The database backup stays on the card itself, in `/ci-backup`.
+- The app does not distribute keys, tickets, seeds or games.
+- Use only content you have the right to use. This project is not affiliated with Nintendo.
 
-## Créditos e licenças
+## Credits and licenses
 
-- Fluxo de instalação: porte do [custom-install](https://github.com/ihaveamac/custom-install)
-  (MIT, Ian Burgwin).
-- Banco de títulos: [save3ds](https://github.com/wwylele/save3ds) (MIT ou Apache-2.0, Weiyi
-  Wang).
-- Referência de crypto e formatos: [pyctr](https://github.com/ihaveamac/pyctr) (MIT, Ian
+- Install flow: port of [custom-install](https://github.com/ihaveamac/custom-install) (MIT, Ian
   Burgwin).
-- Fontes: [Fredoka](https://github.com/hafontia/Fredoka-One) e
+- Title database: [save3ds](https://github.com/wwylele/save3ds) (MIT or Apache-2.0, Weiyi Wang).
+- Crypto and format reference: [pyctr](https://github.com/ihaveamac/pyctr) (MIT, Ian Burgwin).
+- Fonts: [Fredoka](https://github.com/hafontia/Fredoka-One) and
   [Hanken Grotesk](https://github.com/marcologous/hanken-grotesk), SIL OFL 1.1.
-- Visual: inspirado no [DreamFTP](https://github.com/Synaelle/DreamFTP) (AGPL-3.0).
-- Finalizador 3DS: baseado no
+- Look: inspired by [DreamFTP](https://github.com/Synaelle/DreamFTP) (AGPL-3.0).
+- 3DS finalizer: based on
   [custom-install-finalize](https://github.com/ihaveamac/custom-install/tree/python-package/finalize)
   (MIT, Ian Burgwin).
 
-O código do app é MIT (`android/LICENSE`). O custom-install original mantém a licença MIT em
-`LICENSE.md`. Textos completos das licenças em `android/app/src/main/assets/licenses` e na tela
-de Licenças.
+The app code is MIT (`android/LICENSE`). The original custom-install keeps the MIT license in
+`LICENSE.md`. Full license texts are in `android/app/src/main/assets/licenses` and on the Licenses
+screen.
 
 ## Roadmap
 
-- [x] Instalação de CIA direto no SD pelo Android
-- [x] Fila, progresso, cancelamento, backup de banco
-- [x] Tema com acentos e pt-BR/en
-- [x] Finalizador próprio no 3DS (DreamInstallFinalize, 3dsx + cia)
-- [ ] Suporte a outros ABIs
+- [x] CIA install straight to the SD card from Android
+- [x] Queue, progress, cancel, database backup
+- [x] Theme with accents, pt-BR/en, automatic SD choice, GitHub update check
+- [x] Own 3DS finalizer (DreamInstallFinalize, 3dsx + cia)
+- [ ] Support for other ABIs

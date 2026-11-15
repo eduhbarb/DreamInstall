@@ -1,15 +1,13 @@
 package dev.oni.dreaminstall
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import dev.oni.dreaminstall.ui.DreamInstallApp
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val viewModel: AppViewModel by viewModels()
 

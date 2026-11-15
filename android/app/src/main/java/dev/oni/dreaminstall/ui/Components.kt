@@ -4,18 +4,19 @@ import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,34 +37,33 @@ import androidx.compose.ui.unit.dp
 import dev.oni.dreaminstall.core.decodeSmdhIcon
 import dev.oni.dreaminstall.ui.theme.LocalPalette
 
+/** A tonal Material 3 card: raised surface instead of the outlined card of 1.3. */
 @Composable
 fun DreamCard(
     modifier: Modifier = Modifier,
-    padding: Dp = 16.dp,
+    padding: Dp = 14.dp,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val palette = LocalPalette.current
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = Color(palette.card),
+        color = MaterialTheme.colorScheme.surfaceContainer,
         shape = MaterialTheme.shapes.large,
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(palette.border)),
     ) {
         Column(Modifier.padding(padding), content = content)
     }
 }
 
 @Composable
-fun SectionTitle(text: String, trailing: @Composable (() -> Unit)? = null) {
+fun SectionLabel(text: String, trailing: @Composable (() -> Unit)? = null) {
     Row(
-        Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
-            text = text.uppercase(),
+            text.uppercase(),
             style = MaterialTheme.typography.labelSmall,
-            color = Color(LocalPalette.current.dim),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         trailing?.invoke()
     }
@@ -72,37 +72,38 @@ fun SectionTitle(text: String, trailing: @Composable (() -> Unit)? = null) {
 enum class ChipTone { Ok, Warn, Bad, Dim, Accent }
 
 @Composable
-fun Chip(text: String, tone: ChipTone = ChipTone.Dim) {
+fun Chip(text: String, tone: ChipTone = ChipTone.Dim, check: Boolean = false) {
     val palette = LocalPalette.current
-    val color = when (tone) {
-        ChipTone.Ok -> Color(0xFF54D08A)
+    val content = when (tone) {
+        ChipTone.Ok -> Color(0xFF8FE3B0)
         ChipTone.Warn -> Color(0xFFE7B45C)
-        ChipTone.Bad -> Color(0xFFE44C3E)
-        ChipTone.Dim -> Color(palette.dim)
+        ChipTone.Bad -> Color(0xFFF08A80)
+        ChipTone.Dim -> MaterialTheme.colorScheme.onSurfaceVariant
         ChipTone.Accent -> Color(palette.highlight)
     }
-    val background = when (tone) {
-        ChipTone.Ok -> Color(0x1F54D08A)
-        ChipTone.Warn -> Color(0x1FE7B45C)
-        ChipTone.Bad -> Color(0x1FE44C3E)
-        ChipTone.Dim -> Color(0x141E1530)
-        ChipTone.Accent -> Color(0x1FCBB0F5)
+    val container = when (tone) {
+        ChipTone.Ok -> Color(0xFF12251C)
+        ChipTone.Warn -> Color(0xFF261D10)
+        ChipTone.Bad -> Color(0xFF2A1412)
+        ChipTone.Dim -> MaterialTheme.colorScheme.surfaceContainerHigh
+        ChipTone.Accent -> MaterialTheme.colorScheme.primaryContainer
     }
-    Text(
-        text = text,
-        style = MaterialTheme.typography.labelSmall,
-        color = color,
-        maxLines = 1,
-        modifier = Modifier
-            .clip(CircleShape)
-            .background(background)
-            .border(1.dp, color.copy(alpha = 0.45f), CircleShape)
-            .padding(horizontal = 8.dp, vertical = 3.dp),
-    )
+    Surface(color = container, contentColor = content, shape = RoundedCornerShape(8.dp)) {
+        Row(
+            Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            if (check) {
+                Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(12.dp))
+            }
+            Text(text, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+        }
+    }
 }
 
 @Composable
-fun Crescent(size: Dp = 34.dp) {
+fun Crescent(size: Dp = 28.dp) {
     val palette = LocalPalette.current
     Canvas(Modifier.size(size)) {
         drawCircle(Color(palette.accent), radius = this.size.minDimension * 0.46f)
@@ -122,7 +123,7 @@ fun ProgressLine(fraction: Float, modifier: Modifier = Modifier, color: Color? =
             .fillMaxWidth()
             .height(6.dp)
             .clip(CircleShape)
-            .background(Color(palette.track)),
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
     ) {
         Box(
             Modifier
@@ -135,21 +136,27 @@ fun ProgressLine(fraction: Float, modifier: Modifier = Modifier, color: Color? =
 }
 
 @Composable
-fun Thumb(icon: ByteArray?, size: Dp = 46.dp) {
-    val palette = LocalPalette.current
+fun Thumb(icon: ByteArray?, size: Dp = 40.dp) {
     val bitmap: ImageBitmap? = remember(icon) { icon?.let { rgb565(it) } }
     Box(
         Modifier
             .size(size)
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color(palette.track))
-            .border(1.dp, Color(palette.border), RoundedCornerShape(12.dp)),
+            .clip(RoundedCornerShape(10.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
         contentAlignment = Alignment.Center,
     ) {
         if (bitmap != null) {
-            Image(bitmap, contentDescription = null, modifier = Modifier.size(size).clip(RoundedCornerShape(12.dp)))
+            Image(
+                bitmap,
+                contentDescription = null,
+                modifier = Modifier.size(size).clip(RoundedCornerShape(10.dp)),
+            )
         } else {
-            Text("3DS", style = MaterialTheme.typography.labelSmall, color = Color(palette.dim))
+            Text(
+                "3DS",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
@@ -161,36 +168,35 @@ fun rgb565(data: ByteArray): ImageBitmap? {
 
 @Composable
 fun LineNote(text: String, tone: ChipTone = ChipTone.Dim, icon: ImageVector? = null) {
-    val palette = LocalPalette.current
     val edge = when (tone) {
         ChipTone.Ok -> Color(0xFF54D08A)
         ChipTone.Warn -> Color(0xFFE7B45C)
         ChipTone.Bad -> Color(0xFFE44C3E)
-        ChipTone.Dim -> Color(palette.border)
-        ChipTone.Accent -> Color(palette.accent)
+        ChipTone.Dim -> MaterialTheme.colorScheme.outline
+        ChipTone.Accent -> MaterialTheme.colorScheme.primary
     }
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(Color(palette.blob))
-            .border(1.dp, Color(palette.border), RoundedCornerShape(14.dp))
-            .padding(horizontal = 12.dp, vertical = 11.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.Top,
-    ) {
-        Box(Modifier.padding(top = 2.dp).size(3.dp, 16.dp).clip(CircleShape).background(edge))
-        Column(Modifier.weight(1f)) {
-            Text(text, style = MaterialTheme.typography.bodySmall, color = Color(palette.soft))
-        }
-        if (icon != null) {
-            Icon(icon, contentDescription = null, tint = edge, modifier = Modifier.size(16.dp))
+    Surface(color = MaterialTheme.colorScheme.surfaceContainerHigh, shape = MaterialTheme.shapes.medium) {
+        Row(
+            Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(Modifier.size(3.dp, 16.dp).clip(CircleShape).background(edge))
+            Text(
+                text,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            if (icon != null) {
+                Icon(icon, contentDescription = null, tint = edge, modifier = Modifier.size(15.dp))
+            }
         }
     }
 }
 
 @Composable
-fun SingleLine(text: String, color: Color = Color(LocalPalette.current.dim)) {
+fun SingleLine(text: String, color: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
     Text(
         text = text,
         style = MaterialTheme.typography.bodySmall,

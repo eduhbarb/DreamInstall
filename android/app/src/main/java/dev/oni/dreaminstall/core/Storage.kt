@@ -161,6 +161,23 @@ object Storage {
 
 class InstallError(message: String) : Exception(message)
 
+/**
+ * The card picked when the app opens. A manual choice stays while it is mounted; otherwise only
+ * a removable volume with a Nintendo 3DS folder qualifies, preferring the one that matches the
+ * console id0. Internal storage is never auto-picked.
+ */
+fun chooseVolume(volumes: List<SdVolume>, savedPath: String?, manual: Boolean, id0: String?): SdVolume? {
+    if (manual && savedPath != null) {
+        volumes.firstOrNull { it.root.absolutePath == savedPath }?.let { return it }
+    }
+    val cards = volumes.filter { it.removable && it.has3ds }
+    if (cards.isEmpty()) return null
+    if (id0 != null) {
+        cards.firstOrNull { File(it.root, "Nintendo 3DS/$id0").isDirectory }?.let { return it }
+    }
+    return cards.first()
+}
+
 /** Key files found on the SD card, in the same places custom-install checks on a PC. */
 data class FoundKeys(
     val boot9: File?,

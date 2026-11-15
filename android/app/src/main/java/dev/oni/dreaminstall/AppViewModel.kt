@@ -20,6 +20,10 @@ import dev.oni.dreaminstall.core.SdVolume
 import dev.oni.dreaminstall.core.Storage
 import dev.oni.dreaminstall.core.TitleKind
 import dev.oni.dreaminstall.core.TitleState
+import dev.oni.dreaminstall.core.UpdateChecker
+import dev.oni.dreaminstall.core.UpdateInfo
+import dev.oni.dreaminstall.core.chooseVolume
+import dev.oni.dreaminstall.core.isNewer
 import dev.oni.dreaminstall.core.kindOf
 import dev.oni.dreaminstall.service.InstallService
 import dev.oni.dreaminstall.ui.theme.DEFAULT_ACCENT
@@ -51,6 +55,13 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     val copyFinalize = MutableStateFlow(prefs.getBoolean("finalize", true))
     val installFinalizerTitle = MutableStateFlow(prefs.getBoolean("installFinalizer", true))
 
+    val language = MutableStateFlow(Language.current(app))
+    val autoUpdate = MutableStateFlow(prefs.getBoolean("autoUpdate", true))
+    val update = MutableStateFlow<UpdateInfo?>(null)
+    val lastRelease = MutableStateFlow<UpdateInfo?>(null)
+    val checkingUpdate = MutableStateFlow(false)
+    val updateChecked = MutableStateFlow(false)
+
     val keys = MutableStateFlow<ConsoleKeys?>(null)
     val keyFiles = MutableStateFlow<Save3ds.KeysFiles?>(null)
     val keyStatus = MutableStateFlow(KeyStatus())
@@ -70,6 +81,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         loadKeys()
         queue.value = QueueItem.listFromJson(prefs.getString("queue", null))
         refreshVolumes()
+        if (autoUpdate.value) checkUpdates(manual = false)
         viewModelScope.launch {
             install.collect { state ->
                 if (state.running) {
@@ -123,6 +135,55 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         prefs.edit().putBoolean("installFinalizer", value).apply()
     }
 
+    fun setLanguage(value: String) {
+        if (language.value == value) return
+        language.value = value
+        Language.set(getApplication(), value)
+    }
+
+    fun setAutoUpdate(value: Boolean) {
+        autoUpdate.value = value
+        prefs.edit().putBoolean("autoUpdate", value).apply()
+        if (value) checkUpdates(manual = false)
+    }
+
+    fun checkUpdates(manual: Boolean) {
+        if (checkingUpdate.value) return
+        checkingUpdate.value = true
+        viewModelScope.launch {
+            val app = getApplication<Application>()
+            val result = runCatching {
+                withContext(Dispatchers.IO) { UpdateChecker.fetch() }
+            }
+            checkingUpdate.value = false
+            updateChecked.value = true
+            result.onSuccess { info ->
+                lastRelease.value = info
+                if (isNewer(info.version, BuildConfig.VERSION_NAME)) {
+                    val ignored = prefs.getString("ignoredVersion", null)
+                    if (manual || ignored != info.version) update.value = info
+                } else if (manual) {
+                    show(app.getString(R.string.update_latest, BuildConfig.VERSION_NAME))
+                }
+            }.onFailure { error ->
+                if (manual) {
+                    show(app.getString(R.string.update_failed, error.message ?: error.javaClass.simpleName))
+                }
+            }
+        }
+    }
+
+    /** Keeps the version out of the automatic banner, but a manual check still shows it. */
+    fun ignoreUpdate() {
+        val info = update.value ?: return
+        prefs.edit().putString("ignoredVersion", info.version).apply()
+        update.value = null
+    }
+
+    fun dismissUpdate() {
+        update.value = null
+    }
+
     fun show(text: String?) {
         message.value = text
     }
@@ -148,11 +209,15 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             val found = withContext(Dispatchers.IO) { Storage.volumes(app) }
             volumes.value = found
             val savedPath = prefs.getString("sd", null)
-            val saved = found.firstOrNull { it.root.absolutePath == savedPath }
-            val chosen = saved ?: found.firstOrNull { it.has3ds } ?: found.firstOrNull()
+            val manual = prefs.getBoolean("sdManual", false)
+            // A card the user picked by hand stays; otherwise only a removable card with the
+            // console folder is chosen, so internal storage is never picked by accident.
+            val chosen = chooseVolume(found, savedPath, manual, keys.value?.id0Hex)
             if (chosen != null) {
                 selectedRoot.value = chosen.root
                 prefs.edit().putString("sd", chosen.root.absolutePath).apply()
+            } else {
+                selectedRoot.value = null
             }
             updateLayout()
             if (chosen != null) scanCardForKeys(overwrite = false)
@@ -161,7 +226,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     fun selectRoot(root: File) {
         selectedRoot.value = root
-        prefs.edit().putString("sd", root.absolutePath).apply()
+        prefs.edit().putString("sd", root.absolutePath).putBoolean("sdManual", true).apply()
         updateLayout()
         scanCardForKeys(overwrite = false)
     }
