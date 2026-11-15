@@ -108,30 +108,15 @@ object Storage {
         return FinalizerStatus(threeDsx, cia)
     }
 
-    /** Copies an asset only when the file is missing or different, atomically. */
+    /** Copies an asset only when the file is missing or different, with fsync and verification. */
     private fun syncAsset(context: Context, assetName: String, target: File): Boolean {
         return runCatching {
             val bytes = context.assets.open(assetName).use { it.readBytes() }
             if (target.isFile && target.length() == bytes.size.toLong() && target.readBytes().contentEquals(bytes)) {
                 return false
             }
-            val dir = target.parentFile ?: throw InstallError("destino inválido para $assetName")
-            if (!dir.isDirectory && !dir.mkdirs()) {
-                throw InstallError("não foi possível criar ${dir.absolutePath}")
-            }
-            val temp = File(dir, target.name + ".tmp")
-            temp.delete()
-            temp.outputStream().use { output ->
-                output.write(bytes)
-                output.flush()
-                output.fd.sync()
-            }
-            if (temp.length() != bytes.size.toLong()) {
-                throw InstallError("cópia incompleta de $assetName")
-            }
-            if (!temp.renameTo(target)) {
-                target.writeBytes(bytes)
-                temp.delete()
+            if (!target.writeVerified(bytes)) {
+                throw InstallError("não foi possível gravar $assetName")
             }
             true
         }.onFailure {

@@ -274,14 +274,9 @@ class Installer(
         val text = names.entries
             .sortedWith { a, b -> java.lang.Long.compareUnsigned(a.key, b.key) }
             .joinToString("\n") { "%016x\t%s".format(it.key, it.value) } + "\n"
-        val temp = File(file.parentFile, "${file.name}.tmp")
-        runCatching {
-            temp.writeText(text, Charsets.UTF_8)
-            if (!temp.renameTo(file)) {
-                file.writeText(text, Charsets.UTF_8)
-                temp.delete()
-            }
-        }.onFailure { log("não foi possível salvar os nomes: ${it.message}") }
+        if (!file.writeVerified(text.toByteArray(Charsets.UTF_8))) {
+            log("não foi possível salvar os nomes no cartão")
+        }
     }
 
     private fun writeEncrypted(target: File, plain: ByteArray, path3ds: String) {
@@ -527,12 +522,8 @@ object Cifinish {
             out.write(le64(entry.key))
             out.write(entry.value ?: ByteArray(0x10))
         }
-        val temp = File(file.parentFile, "${file.name}.tmp")
-        temp.writeBytes(out.toByteArray())
-        if (file.exists()) file.delete()
-        if (!temp.renameTo(file)) {
-            file.writeBytes(out.toByteArray())
-            temp.delete()
+        if (!file.writeVerified(out.toByteArray())) {
+            throw InstallError("não foi possível gravar ${file.name} no cartão")
         }
     }
 }

@@ -143,15 +143,31 @@ static int load_cifinish(const char *path, TitleEntry **entries) {
 		return -1;
 	}
 
+	fseek(fp, 0, SEEK_END);
+	long file_size = ftell(fp);
+	rewind(fp);
+
 	struct finish_db_header header;
 	if (fread(&header, sizeof(header), 1, fp) != 1) {
 		fclose(fp);
-		snprintf(g_message, sizeof(g_message), "cifinish.bin corrompido.");
+		snprintf(g_message, sizeof(g_message), "cifinish.bin corrompido (%ld bytes).", file_size);
 		return -1;
 	}
 	if (memcmp(header.magic, "CIFINISH", 8)) {
+		bool all_zero = true;
+		for (int i = 0; i < 8; i++) {
+			if (header.magic[i]) all_zero = false;
+		}
 		fclose(fp);
-		snprintf(g_message, sizeof(g_message), "CIFINISH invalido.");
+		if (all_zero) {
+			snprintf(g_message, sizeof(g_message),
+			         "cifinish.bin esta zerado (%ld bytes). Rode a instalacao de novo pelo app.", file_size);
+		} else {
+			snprintf(g_message, sizeof(g_message),
+			         "CIFINISH invalido (%ld bytes): %02X%02X%02X%02X%02X%02X%02X%02X",
+			         file_size, header.magic[0], header.magic[1], header.magic[2], header.magic[3],
+			         header.magic[4], header.magic[5], header.magic[6], header.magic[7]);
+		}
 		return -1;
 	}
 	if (header.version < 1 || header.version > 3) {
