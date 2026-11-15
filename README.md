@@ -54,7 +54,7 @@ O finalizador próprio fica em `3ds/` e é copiado para o cartão pelo app.
 
 Baixe o APK em
 [Releases](https://github.com/eduhbarb/DreamInstaller/releases/latest) e instale no celular.
-O arquivo da versão atual é `DreamInstaller-1.2.0.apk`.
+O arquivo da versão atual é `DreamInstaller-1.2.1.apk`.
 
 - Android 11 ou mais novo, arm64.
 - O APK é assinado com uma chave de desenvolvimento, então não vem da Play Store.
@@ -185,6 +185,7 @@ no 3DS continua obrigatório.
 | Jogo instalado mas continua como presente | ticket não instalado | rode `DreamInstallFinalize` no 3DS |
 | Jogo não aparece | HOME Menu cheia ou ticket ausente | rode o finalize; apague títulos para ficar abaixo de 300 |
 | DreamInstallFinalize não aparece na HOME | ticket ainda não instalado | rode o 3dsx uma vez; o app já deixou o título no cartão |
+| CIFINISH inválido ou cifinish.bin zerado | gravação antiga perdeu o conteúdo | use o app 1.2.1 ou mais novo e rode a instalação de novo |
 | `title.db corrompido` | problema no cartão ou interrupção | restaure `/ci-backup/<data>/title.db` e apague `cifinish.bin` |
 | Instalação cancelada pelo sistema no MIUI | restrição de instalação | abra o APK pelo gerenciador ou libere Instalar via USB |
 
